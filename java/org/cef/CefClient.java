@@ -53,6 +53,7 @@ import java.awt.Rectangle;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
@@ -591,7 +592,7 @@ public class CefClient extends CefClientHandler
                 browser_.remove(identifier);
             } else if (!browser_.isEmpty()) {
                 // Close all browsers.
-                Collection<CefBrowser> browserList = browser_.values();
+                Collection<CefBrowser> browserList = new ArrayList<>(browser_.values());
                 for (CefBrowser browser : browserList) {
                     browser.close(true);
                 }

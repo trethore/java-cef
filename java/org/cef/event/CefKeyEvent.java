@@ -1,19 +1,23 @@
 package org.cef.event;
 
+/**
+ * Lightweight key event used for direct input injection without converting
+ * through AWT. Values mirror GLFW constants used by LWJGL (PRESS=1, RELEASE=0,
+ * REPEAT/TYPE=2) so existing LWJGL code can forward events as-is.
+ */
 public class CefKeyEvent {
-    /* id constants */
-    public static final int KEY_PRESS = 1;
+    /** Matches GLFW_RELEASE. */
     public static final int KEY_RELEASE = 0;
+    /** Matches GLFW_PRESS. */
+    public static final int KEY_PRESS = 1;
+    /** Matches GLFW_REPEAT. */
     public static final int KEY_TYPE = 2;
 
-    // intentionally leaving these public for now
-    // may remove the getters, or maybe add setters, or maybe move to private
-    // not sure yet
-    public int keyCode;
-    public int id;
-    public int modifiers;
-    public char keyChar;
-    public long scancode;
+    private int id;
+    private int keyCode;
+    private char keyChar;
+    private int modifiers;
+    private long scancode;
 
     public CefKeyEvent(int id, int keyCode, char keyChar, int modifiers) {
         this.id = id;
@@ -26,15 +30,39 @@ public class CefKeyEvent {
         return id;
     }
 
-    public int getModifiers() {
-        return modifiers;
+    public int getKeyCode() {
+        return keyCode;
     }
 
     public char getKeyChar() {
         return keyChar;
     }
 
-    public int getKeyCode() {
-        return keyCode;
+    public int getModifiers() {
+        return modifiers;
+    }
+
+    public long getScancode() {
+        return scancode;
+    }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public void setKeyCode(int keyCode) {
+        this.keyCode = keyCode;
+    }
+
+    public void setKeyChar(char keyChar) {
+        this.keyChar = keyChar;
+    }
+
+    public void setModifiers(int modifiers) {
+        this.modifiers = modifiers;
+    }
+
+    public void setScancode(long scancode) {
+        this.scancode = scancode;
     }
 }

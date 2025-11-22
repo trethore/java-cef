@@ -90,7 +90,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private CopyOnWriteArrayList<Consumer<CefPaintEvent>> onPaintListeners =
             new CopyOnWriteArrayList<>();
 
-    CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context,
+    protected CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context,
             CefBrowserSettings settings) {
         this(client, url, transparent, context, null, null, settings);
     }

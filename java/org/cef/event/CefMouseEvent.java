@@ -1,23 +1,29 @@
 package org.cef.event;
 
+/**
+ * Lightweight mouse event for direct injection. Button mask values mirror AWT's
+ * BUTTON{1,2,3}_DOWN_MASK so existing modifier flags stay compatible.
+ */
 public class CefMouseEvent {
-    /* id constants */
+    // Event ids
     public static final int MOUSE_MOVED = 503;
     public static final int MOUSE_EXIT = 505;
-    /* modifier constants */
+    public static final int MOUSE_ENTER = 504;
+    public static final int MOUSE_PRESSED = 501;
+    public static final int MOUSE_RELEASED = 502;
+    public static final int MOUSE_DRAGGED = 506;
+
+    // Modifier masks
     public static final int BUTTON1_MASK = 0x10;
     public static final int BUTTON2_MASK = 0x20;
     public static final int BUTTON3_MASK = 0x40;
 
-    // intentionally leaving these public for now
-    // may remove the getters, or maybe add setters, or maybe move to private
-    // not sure yet
-    public int id;
-    public int x;
-    public int y;
-    public int modifiers;
-    public int clickCount;
-    public int button;
+    private int id;
+    private int x;
+    private int y;
+    private int modifiers;
+    private int clickCount;
+    private int button;
 
     public CefMouseEvent(int id, int x, int y, int clickCount, int button, int modifiers) {
         this.id = id;
@@ -50,5 +56,29 @@ public class CefMouseEvent {
 
     public int getButton() {
         return button;
+    }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setModifiers(int modifiers) {
+        this.modifiers = modifiers;
+    }
+
+    public void setClickCount(int clickCount) {
+        this.clickCount = clickCount;
+    }
+
+    public void setButton(int button) {
+        this.button = button;
     }
 }
