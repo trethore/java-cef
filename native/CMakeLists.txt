@@ -54,12 +54,18 @@ set(JCEF_SRCS
   CefPrintSettings_N.h
   CefQueryCallback_N.cpp
   CefQueryCallback_N.h
+  CefRegistration_N.cpp
+  CefRegistration_N.h
   CefRequest_N.cpp
   CefRequest_N.h
   CefCallback_N.cpp
   CefCallback_N.h
   CefRequestContext_N.cpp
   CefRequestContext_N.h
+  CefResourceReadCallback_N.cpp
+  CefResourceReadCallback_N.h
+  CefResourceSkipCallback_N.cpp
+  CefResourceSkipCallback_N.h
   CefResponse_N.cpp
   CefResponse_N.h
   CefSchemeRegistrar_N.cpp
@@ -83,6 +89,8 @@ set(JCEF_SRCS
   cookie_visitor.cpp
   cookie_visitor.h
   critical_wait.h
+  devtools_message_observer.cpp
+  devtools_message_observer.h
   dialog_handler.cpp
   dialog_handler.h
   display_handler.cpp
@@ -95,6 +103,8 @@ set(JCEF_SRCS
   drag_handler.h
   focus_handler.cpp
   focus_handler.h
+  int_callback.cpp
+  int_callback.h
   jcef_version.h
   jni_scoped_helpers.h
   jni_scoped_helpers.cpp
@@ -142,8 +152,6 @@ set(JCEF_SRCS
 set(JCEF_SRCS_LINUX
   critical_wait_posix.cpp
   jni_util_linux.cpp
-  signal_restore_posix.cpp
-  signal_restore_posix.h
   temp_window_x11.cc
   temp_window_x11.h
   util_linux.cpp
@@ -151,8 +159,6 @@ set(JCEF_SRCS_LINUX
   )
 set(JCEF_SRCS_MAC
   critical_wait_posix.cpp
-  signal_restore_posix.cpp
-  signal_restore_posix.h
   temp_window_mac.h
   temp_window_mac.mm
   util_mac.h
@@ -291,11 +297,6 @@ if(OS_MAC)
   set(EXECUTABLE_NAME "${JCEF_APP_NAME}")
   set(PRODUCT_NAME "${JCEF_APP_NAME}")
 
-  if(USE_SANDBOX)
-    # Logical target used to link the cef_sandbox library.
-    ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-  endif()
-
   # JCEF library target.
   add_library(${JCEF_TARGET} SHARED ${JCEF_RESOURCES_SRCS} ${JCEF_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${JCEF_TARGET})
@@ -366,10 +367,6 @@ if(OS_MAC)
       MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
       OUTPUT_NAME ${_helper_output_name}
       )
-
-    if(USE_SANDBOX)
-      target_link_libraries(${_helper_target} cef_sandbox_lib)
-    endif()
 
     # Add the Helper as a dependency of the main executable target.
     add_dependencies(${JCEF_TARGET} "${_helper_target}")
