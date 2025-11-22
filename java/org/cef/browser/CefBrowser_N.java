@@ -32,6 +32,10 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.swing.SwingUtilities;
 
+import org.cef.event.CefKeyEvent;
+import org.cef.event.CefMouseEvent;
+import org.cef.event.CefMouseWheelEvent;
+
 /**
  * This class represents all methods which are connected to the
  * native counterpart CEF.
@@ -645,6 +649,18 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     /**
+     * Send a lightweight (GLFW/LWJGL style) key event.
+     * @param e The event to send.
+     */
+    protected final void sendKeyEvent(CefKeyEvent e) {
+        try {
+            N_SendKeyEvent2(e);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    /**
      * Send a mouse event.
      * @param e The event to send.
      */
@@ -657,12 +673,36 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     /**
+     * Send a lightweight (GLFW/LWJGL style) mouse event.
+     * @param e The event to send.
+     */
+    protected final void sendMouseEvent(CefMouseEvent e) {
+        try {
+            N_SendMouseEvent2(e);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    /**
      * Send a mouse wheel event.
      * @param e The event to send.
      */
     protected final void sendMouseWheelEvent(MouseWheelEvent e) {
         try {
             N_SendMouseWheelEvent(e);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    /**
+     * Send a lightweight (GLFW/LWJGL style) mouse wheel event.
+     * @param e The event to send.
+     */
+    protected final void sendMouseWheelEvent(CefMouseWheelEvent e) {
+        try {
+            N_SendMouseWheelEvent2(e);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -872,6 +912,9 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_SendKeyEvent(KeyEvent e);
     private final native void N_SendMouseEvent(MouseEvent e);
     private final native void N_SendMouseWheelEvent(MouseWheelEvent e);
+    private final native void N_SendKeyEvent2(CefKeyEvent e);
+    private final native void N_SendMouseEvent2(CefMouseEvent e);
+    private final native void N_SendMouseWheelEvent2(CefMouseWheelEvent e);
     private final native void N_DragTargetDragEnter(
             CefDragData dragData, Point pos, int modifiers, int allowed_ops);
     private final native void N_DragTargetDragOver(Point pos, int modifiers, int allowed_ops);

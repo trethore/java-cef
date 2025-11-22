@@ -43,6 +43,27 @@
 
 namespace {
 
+// Convert GLFW/LWJGL modifier mask (shift=0x1, ctrl=0x2, alt=0x4, super=0x8)
+// plus button masks from CefMouseEvent (0x10/0x20/0x40) into CEF flags.
+int GetCefModifiersGlfwMask(int modifiers) {
+  int cef_modifiers = 0;
+  if (modifiers & 0x0001)  // SHIFT
+    cef_modifiers |= EVENTFLAG_SHIFT_DOWN;
+  if (modifiers & 0x0002)  // CONTROL
+    cef_modifiers |= EVENTFLAG_CONTROL_DOWN;
+  if (modifiers & 0x0004)  // ALT
+    cef_modifiers |= EVENTFLAG_ALT_DOWN;
+  if (modifiers & 0x0008)  // SUPER/COMMAND
+    cef_modifiers |= EVENTFLAG_COMMAND_DOWN;
+  if (modifiers & 0x10)  // BUTTON1_MASK
+    cef_modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;
+  if (modifiers & 0x20)  // BUTTON2_MASK
+    cef_modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
+  if (modifiers & 0x40)  // BUTTON3_MASK
+    cef_modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
+  return cef_modifiers;
+}
+
 int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
   JNI_STATIC_DEFINE_INT_RV(env, cls, ALT_DOWN_MASK, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON1_DOWN_MASK, 0);
@@ -2000,6 +2021,320 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
   if (scroll_type == JNI_STATIC(WHEEL_UNIT_SCROLL)) {
     // Use the smarter version that considers platform settings.
     CallJNIMethodI_V(env, cls, mouse_wheel_event, "getUnitsToScroll", &delta);
+  }
+
+  double deltaX = 0, deltaY = 0;
+  if (cef_event.modifiers & EVENTFLAG_SHIFT_DOWN)
+    deltaX = delta;
+  else
+    deltaY = delta;
+
+  browser->GetHost()->SendMouseWheelEvent(cef_event, deltaX, deltaY);
+}
+
+// Lightweight (GLFW/LWJGL style) key event injection.
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent2(JNIEnv* env,
+                                                    jobject obj,
+                                                    jobject key_event) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  ScopedJNIClass cls(env, env->GetObjectClass(key_event));
+  if (!cls)
+    return;
+
+  int event_type, modifiers, key_code;
+  char16_t key_char;
+  jlong scanCode = 0;
+  if (!CallJNIMethodI_V(env, cls, key_event, "getID", &event_type) ||
+      !CallJNIMethodC_V(env, cls, key_event, "getKeyChar", &key_char) ||
+      !CallJNIMethodI_V(env, cls, key_event, "getModifiers", &modifiers) ||
+      !CallJNIMethodI_V(env, cls, key_event, "getKeyCode", &key_code)) {
+    return;
+  }
+  GetJNIFieldLong(env, cls, key_event, "scancode", &scanCode);
+
+  CefKeyEvent cef_event;
+  cef_event.modifiers = GetCefModifiersGlfwMask(modifiers);
+
+#if defined(OS_WIN)
+  if (scanCode == 0) {
+    // Try to derive the scan code from GLFW if available.
+    ScopedJNIClass glfwCls(env, "org/lwjgl/glfw/GLFW");
+    if (glfwCls) {
+      int out = 0;
+      if (CallStaticJNIMethodII_V(env, glfwCls, "glfwGetKeyScancode", &out,
+                                  key_code)) {
+        scanCode = out;
+      }
+    }
+  }
+
+  BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
+  cef_event.native_key_code = (scanCode << 16) | 1;  // repeat count 1
+#elif defined(OS_LINUX) || defined(OS_MACOSX)
+  // GLFW key code constants.
+  const int GLFW_KEY_BACKSPACE = 259;
+  const int GLFW_KEY_DELETE = 261;
+  const int GLFW_KEY_DOWN = 264;
+  const int GLFW_KEY_ENTER = 257;
+  const int GLFW_KEY_ESCAPE = 256;
+  const int GLFW_KEY_LEFT = 263;
+  const int GLFW_KEY_RIGHT = 262;
+  const int GLFW_KEY_TAB = 258;
+  const int GLFW_KEY_UP = 265;
+
+#if defined(OS_LINUX)
+  if (key_code == GLFW_KEY_BACKSPACE)
+    cef_event.native_key_code = XK_BackSpace;
+  else if (key_code == GLFW_KEY_DELETE)
+    cef_event.native_key_code = XK_Delete;
+  else if (key_code == GLFW_KEY_DOWN)
+    cef_event.native_key_code = XK_Down;
+  else if (key_code == GLFW_KEY_ENTER)
+    cef_event.native_key_code = XK_Return;
+  else if (key_code == GLFW_KEY_ESCAPE)
+    cef_event.native_key_code = XK_Escape;
+  else if (key_code == GLFW_KEY_LEFT)
+    cef_event.native_key_code = XK_Left;
+  else if (key_code == GLFW_KEY_RIGHT)
+    cef_event.native_key_code = XK_Right;
+  else if (key_code == GLFW_KEY_TAB)
+    cef_event.native_key_code = XK_Tab;
+  else if (key_code == GLFW_KEY_UP)
+    cef_event.native_key_code = XK_Up;
+  else
+    cef_event.native_key_code = key_char;
+
+  KeyboardCode windows_key_code =
+      KeyboardCodeFromXKeysym(cef_event.native_key_code);
+  cef_event.windows_key_code =
+      GetWindowsKeyCodeWithoutLocation(windows_key_code);
+
+  if (cef_event.modifiers & EVENTFLAG_ALT_DOWN)
+    cef_event.is_system_key = true;
+
+  if (windows_key_code == VKEY_RETURN) {
+    cef_event.unmodified_character = '\r';
+  } else {
+    cef_event.unmodified_character = cef_event.native_key_code;
+  }
+
+  if (cef_event.modifiers & EVENTFLAG_CONTROL_DOWN) {
+    cef_event.character = GetControlCharacter(
+        windows_key_code, cef_event.modifiers & EVENTFLAG_SHIFT_DOWN);
+  } else {
+    cef_event.character = cef_event.unmodified_character;
+  }
+#elif defined(OS_MACOSX)
+  if (key_code == GLFW_KEY_BACKSPACE) {
+    cef_event.native_key_code = kVK_Delete;
+    cef_event.unmodified_character = kBackspaceCharCode;
+  } else if (key_code == GLFW_KEY_DELETE) {
+    cef_event.native_key_code = kVK_ForwardDelete;
+    cef_event.unmodified_character = kDeleteCharCode;
+  } else if (key_code == GLFW_KEY_DOWN) {
+    cef_event.native_key_code = kVK_DownArrow;
+    cef_event.unmodified_character = /* NSDownArrowFunctionKey */ 0xF701;
+  } else if (key_code == GLFW_KEY_ENTER) {
+    cef_event.native_key_code = kVK_Return;
+    cef_event.unmodified_character = kReturnCharCode;
+  } else if (key_code == GLFW_KEY_ESCAPE) {
+    cef_event.native_key_code = kVK_Escape;
+    cef_event.unmodified_character = kEscapeCharCode;
+  } else if (key_code == GLFW_KEY_LEFT) {
+    cef_event.native_key_code = kVK_LeftArrow;
+    cef_event.unmodified_character = /* NSLeftArrowFunctionKey */ 0xF702;
+  } else if (key_code == GLFW_KEY_RIGHT) {
+    cef_event.native_key_code = kVK_RightArrow;
+    cef_event.unmodified_character = /* NSRightArrowFunctionKey */ 0xF703;
+  } else if (key_code == GLFW_KEY_TAB) {
+    cef_event.native_key_code = kVK_Tab;
+    cef_event.unmodified_character = kTabCharCode;
+  } else if (key_code == GLFW_KEY_UP) {
+    cef_event.native_key_code = kVK_UpArrow;
+    cef_event.unmodified_character = /* NSUpArrowFunctionKey */ 0xF700;
+  } else {
+    cef_event.native_key_code = GetMacKeyCodeFromChar(key_char);
+    if (cef_event.native_key_code == -1)
+      return;
+
+    cef_event.unmodified_character = key_char;
+  }
+
+  cef_event.character = cef_event.unmodified_character;
+
+  if (cef_event.modifiers & EVENTFLAG_SHIFT_DOWN) {
+    if (key_char >= '0' && key_char <= '9') {
+      cef_event.character = kShiftCharsForNumberKeys[key_char - '0'];
+    } else if (key_char >= 'A' && key_char <= 'Z') {
+      cef_event.character = 'A' + (key_char - 'A');
+    } else {
+      switch (cef_event.native_key_code) {
+        case kVK_ANSI_Grave:
+          cef_event.character = '~';
+          break;
+        case kVK_ANSI_Minus:
+          cef_event.character = '_';
+          break;
+        case kVK_ANSI_Equal:
+          cef_event.character = '+';
+          break;
+        case kVK_ANSI_LeftBracket:
+          cef_event.character = '{';
+          break;
+        case kVK_ANSI_RightBracket:
+          cef_event.character = '}';
+          break;
+        case kVK_ANSI_Backslash:
+          cef_event.character = '|';
+          break;
+        case kVK_ANSI_Semicolon:
+          cef_event.character = ':';
+          break;
+        case kVK_ANSI_Quote:
+          cef_event.character = '\"';
+          break;
+        case kVK_ANSI_Comma:
+          cef_event.character = '<';
+          break;
+        case kVK_ANSI_Period:
+          cef_event.character = '>';
+          break;
+        case kVK_ANSI_Slash:
+          cef_event.character = '?';
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  if (cef_event.modifiers & EVENTFLAG_CONTROL_DOWN) {
+    if (key_char >= 'A' && key_char <= 'Z')
+      cef_event.character = 1 + key_char - 'A';
+    else if (cef_event.native_key_code == kVK_ANSI_LeftBracket)
+      cef_event.character = 27;
+    else if (cef_event.native_key_code == kVK_ANSI_Backslash)
+      cef_event.character = 28;
+    else if (cef_event.native_key_code == kVK_ANSI_RightBracket)
+      cef_event.character = 29;
+  }
+#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+
+  if (event_type == 1 /* KEY_PRESS */) {
+#if defined(OS_WIN)
+    cef_event.windows_key_code = VkCode;
+#endif
+    cef_event.type = KEYEVENT_RAWKEYDOWN;
+  } else if (event_type == 0 /* KEY_RELEASE */) {
+#if defined(OS_WIN)
+    cef_event.windows_key_code = VkCode;
+    cef_event.native_key_code |= 0xC0000000;
+#endif
+    cef_event.type = KEYEVENT_KEYUP;
+  } else if (event_type == 2 /* KEY_TYPE */) {
+#if defined(OS_WIN)
+    cef_event.windows_key_code = key_char;
+#endif
+    cef_event.type = KEYEVENT_CHAR;
+  } else {
+    return;
+  }
+
+  browser->GetHost()->SendKeyEvent(cef_event);
+}
+
+// Lightweight mouse event injection.
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent2(JNIEnv* env,
+                                                      jobject obj,
+                                                      jobject mouse_event) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  ScopedJNIClass cls(env, env->GetObjectClass(mouse_event));
+  if (!cls)
+    return;
+
+  int event_type, x, y, modifiers;
+  if (!CallJNIMethodI_V(env, cls, mouse_event, "getID", &event_type) ||
+      !CallJNIMethodI_V(env, cls, mouse_event, "getX", &x) ||
+      !CallJNIMethodI_V(env, cls, mouse_event, "getY", &y) ||
+      !CallJNIMethodI_V(env, cls, mouse_event, "getModifiers", &modifiers)) {
+    return;
+  }
+
+  CefMouseEvent cef_event;
+  cef_event.x = x;
+  cef_event.y = y;
+  cef_event.modifiers = GetCefModifiersGlfwMask(modifiers);
+
+  if (event_type == 501 /* MOUSE_PRESSED */ ||
+      event_type == 502 /* MOUSE_RELEASED */) {
+    int click_count, button;
+    if (!CallJNIMethodI_V(env, cls, mouse_event, "getClickCount",
+                          &click_count) ||
+        !CallJNIMethodI_V(env, cls, mouse_event, "getButton", &button)) {
+      return;
+    }
+
+    // GLFW button order: 0=left,1=right,2=middle. CinemaMod originally mapped
+    // BUTTON_2 to middle, keep that mapping for compatibility.
+    const int GLFW_MOUSE_BUTTON_1 = 0;
+    const int GLFW_MOUSE_BUTTON_2 = 1;
+    const int GLFW_MOUSE_BUTTON_3 = 2;
+
+    CefBrowserHost::MouseButtonType cef_mbt;
+    if (button == GLFW_MOUSE_BUTTON_1)
+      cef_mbt = MBT_LEFT;
+    else if (button == GLFW_MOUSE_BUTTON_2)
+      cef_mbt = MBT_MIDDLE;
+    else if (button == GLFW_MOUSE_BUTTON_3)
+      cef_mbt = MBT_RIGHT;
+    else
+      return;
+
+    browser->GetHost()->SendMouseClickEvent(
+        cef_event, cef_mbt, (event_type == 502 /* RELEASE */), click_count);
+  } else if (event_type == 503 /* MOUSE_MOVED */ ||
+             event_type == 506 /* MOUSE_DRAGGED */ ||
+             event_type == 504 /* MOUSE_ENTERED */ ||
+             event_type == 505 /* MOUSE_EXITED */) {
+    browser->GetHost()->SendMouseMoveEvent(
+        cef_event, (event_type == 505 /* EXIT */));
+  }
+}
+
+// Lightweight mouse wheel event injection.
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent2(
+    JNIEnv* env,
+    jobject obj,
+    jobject mouse_wheel_event) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  ScopedJNIClass cls(env, env->GetObjectClass(mouse_wheel_event));
+  if (!cls)
+    return;
+
+  int scroll_type, x, y, modifiers;
+  double delta;
+  if (!CallJNIMethodI_V(env, cls, mouse_wheel_event, "getScrollType",
+                        &scroll_type) ||
+      !CallJNIMethodD_V(env, cls, mouse_wheel_event, "getWheelRotation",
+                        &delta) ||
+      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getX", &x) ||
+      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getY", &y) ||
+      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getModifiers",
+                        &modifiers)) {
+    return;
+  }
+
+  CefMouseEvent cef_event;
+  cef_event.x = x;
+  cef_event.y = y;
+  cef_event.modifiers = GetCefModifiersGlfwMask(modifiers);
+
+  if (scroll_type == 0 /* WHEEL_UNIT_SCROLL */) {
+    CallJNIMethodD_V(env, cls, mouse_wheel_event, "getUnitsToScroll", &delta);
   }
 
   double deltaX = 0, deltaY = 0;
