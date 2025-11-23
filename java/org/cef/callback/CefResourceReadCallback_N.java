@@ -36,6 +36,6 @@ class CefResourceReadCallback_N extends CefNativeAdapter implements CefResourceR
         }
     }
 
-    private final native void N_Continue(
+    protected final native void N_Continue(
             long self, int bytes_read, long nativeBufferRef, byte[] javaBuffer);
 }

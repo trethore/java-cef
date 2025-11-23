@@ -40,7 +40,7 @@ class CefFileDialogCallback_N extends CefNativeAdapter implements CefFileDialogC
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Cancel(getNativeRef(null));
             } catch (UnsatisfiedLinkError ule) {
@@ -54,6 +54,6 @@ class CefFileDialogCallback_N extends CefNativeAdapter implements CefFileDialogC
         }
     }
 
-    private final native void N_Continue(long self, Vector<String> filePaths);
-    private final native void N_Cancel(long self);
+    protected final native void N_Continue(long self, Vector<String> filePaths);
+    protected final native void N_Cancel(long self);
 }

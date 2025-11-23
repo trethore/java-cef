@@ -14,7 +14,7 @@ import java.util.Vector;
  */
 class CefPostData_N extends CefPostData implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
 
     @Override
@@ -117,7 +117,7 @@ class CefPostData_N extends CefPostData implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {
@@ -126,12 +126,12 @@ class CefPostData_N extends CefPostData implements CefNative {
         }
     }
 
-    private final native static CefPostData_N N_Create();
-    private final native void N_Dispose(long self);
-    private final native boolean N_IsReadOnly(long self);
-    private final native int N_GetElementCount(long self);
-    private final native void N_GetElements(long self, Vector<CefPostDataElement> elements);
-    private final native boolean N_RemoveElement(long self, CefPostDataElement element);
-    private final native boolean N_AddElement(long self, CefPostDataElement element);
-    private final native void N_RemoveElements(long self);
+    protected final native static CefPostData_N N_Create();
+    protected final native void N_Dispose(long self);
+    protected final native boolean N_IsReadOnly(long self);
+    protected final native int N_GetElementCount(long self);
+    protected final native void N_GetElements(long self, Vector<CefPostDataElement> elements);
+    protected final native boolean N_RemoveElement(long self, CefPostDataElement element);
+    protected final native boolean N_AddElement(long self, CefPostDataElement element);
+    protected final native void N_RemoveElements(long self);
 }

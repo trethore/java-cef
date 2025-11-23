@@ -39,7 +39,7 @@ class CefCallback_N extends CefNativeAdapter implements CefCallback {
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Cancel(getNativeRef(null));
             } catch (UnsatisfiedLinkError ule) {
@@ -53,6 +53,6 @@ class CefCallback_N extends CefNativeAdapter implements CefCallback {
         }
     }
 
-    private final native void N_Continue(long self);
-    private final native void N_Cancel(long self);
+    protected final native void N_Continue(long self);
+    protected final native void N_Cancel(long self);
 }

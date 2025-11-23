@@ -155,7 +155,7 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(getNativeRef(null));
             } catch (UnsatisfiedLinkError ule) {
@@ -177,19 +177,19 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
         }
     }
 
-    private final native void N_Dispose(long self);
-    private final native String N_GetIdentifier(long self);
-    private final native String N_GetURL(long self);
-    private final native String N_GetName(long self);
-    private final native boolean N_IsMain(long self);
-    private final native boolean N_IsValid(long self);
-    private final native boolean N_IsFocused(long self);
-    private final native CefFrame N_GetParent(long self);
-    private final native void N_ExecuteJavaScript(long self, String code, String url, int line);
-    private final native void N_Undo(long self);
-    private final native void N_Redo(long self);
-    private final native void N_Cut(long self);
-    private final native void N_Copy(long self);
-    private final native void N_Paste(long self);
-    private final native void N_SelectAll(long self);
+    protected final native void N_Dispose(long self);
+    protected final native String N_GetIdentifier(long self);
+    protected final native String N_GetURL(long self);
+    protected final native String N_GetName(long self);
+    protected final native boolean N_IsMain(long self);
+    protected final native boolean N_IsValid(long self);
+    protected final native boolean N_IsFocused(long self);
+    protected final native CefFrame N_GetParent(long self);
+    protected final native void N_ExecuteJavaScript(long self, String code, String url, int line);
+    protected final native void N_Undo(long self);
+    protected final native void N_Redo(long self);
+    protected final native void N_Cut(long self);
+    protected final native void N_Copy(long self);
+    protected final native void N_Paste(long self);
+    protected final native void N_SelectAll(long self);
 }

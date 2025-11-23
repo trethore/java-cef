@@ -13,7 +13,7 @@ import java.util.Vector;
 
 class CefCookieManager_N extends CefCookieManager implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
     private static CefCookieManager_N globalInstance = null;
 
@@ -117,7 +117,7 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {
@@ -127,11 +127,11 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     }
 
     private final static native CefCookieManager_N N_GetGlobalManager();
-    private final native void N_Dispose(long self);
-    private final native boolean N_VisitAllCookies(long self, CefCookieVisitor visitor);
-    private final native boolean N_VisitUrlCookies(
+    protected final native void N_Dispose(long self);
+    protected final native boolean N_VisitAllCookies(long self, CefCookieVisitor visitor);
+    protected final native boolean N_VisitUrlCookies(
             long self, String url, boolean includeHttpOnly, CefCookieVisitor visitor);
-    private final native boolean N_SetCookie(long self, String url, CefCookie cookie);
-    private final native boolean N_DeleteCookies(long self, String url, String cookieName);
-    private final native boolean N_FlushStore(long self, CefCompletionCallback handler);
+    protected final native boolean N_SetCookie(long self, String url, CefCookie cookie);
+    protected final native boolean N_DeleteCookies(long self, String url, String cookieName);
+    protected final native boolean N_FlushStore(long self, CefCompletionCallback handler);
 }

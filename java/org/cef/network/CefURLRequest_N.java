@@ -11,7 +11,7 @@ import org.cef.misc.CefCleanup;
 
 class CefURLRequest_N extends CefURLRequest implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefRequest request_;
     private final CefURLRequestClient client_;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
@@ -112,7 +112,7 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {
@@ -121,10 +121,10 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
         }
     }
 
-    private final native void N_Create(CefRequest request, CefURLRequestClient client);
-    private final native void N_Dispose(long self);
-    private final native Status N_GetRequestStatus(long self);
-    private final native ErrorCode N_GetRequestError(long self);
-    private final native CefResponse N_GetResponse(long self);
-    private final native void N_Cancel(long self);
+    protected final native void N_Create(CefRequest request, CefURLRequestClient client);
+    protected final native void N_Dispose(long self);
+    protected final native Status N_GetRequestStatus(long self);
+    protected final native ErrorCode N_GetRequestError(long self);
+    protected final native CefResponse N_GetResponse(long self);
+    protected final native void N_Cancel(long self);
 }

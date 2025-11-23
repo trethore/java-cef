@@ -40,7 +40,7 @@ class CefPrintDialogCallback_N extends CefNativeAdapter implements CefPrintDialo
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Cancel(getNativeRef(null));
             } catch (UnsatisfiedLinkError ule) {
@@ -54,6 +54,6 @@ class CefPrintDialogCallback_N extends CefNativeAdapter implements CefPrintDialo
         }
     }
 
-    private final native void N_Continue(long self, CefPrintSettings settings);
-    private final native void N_Cancel(long self);
+    protected final native void N_Continue(long self, CefPrintSettings settings);
+    protected final native void N_Cancel(long self);
 }

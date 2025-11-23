@@ -56,6 +56,13 @@ public interface CefBrowser {
      */
     public CefWindowHandler getWindowHandler();
 
+    /**
+     * Returns the AWT/Swing UI component backing this browser instance.
+     * For windowed rendering this is the native heavyweight component, for
+     * off-screen rendering the GL canvas.
+     */
+    public Component getUIComponent();
+
     //
     // The following methods are forwarded to CefBrowser.
     //

@@ -43,7 +43,7 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Failure(getNativeRef(null), -1, "Unexpected cleanup of CefQueryCallback_N");
             } catch (UnsatisfiedLinkError ule) {
@@ -57,6 +57,6 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
         }
     }
 
-    private final native void N_Success(long self, String response);
-    private final native void N_Failure(long self, int error_code, String error_message);
+    protected final native void N_Success(long self, String response);
+    protected final native void N_Failure(long self, int error_code, String error_message);
 }

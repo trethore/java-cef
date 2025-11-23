@@ -9,7 +9,7 @@ import org.cef.misc.CefCleanup;
 
 class CefRegistration_N extends CefRegistration implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
 
     @Override
@@ -30,7 +30,7 @@ class CefRegistration_N extends CefRegistration implements CefNative {
         cleanup.clean(handle, CefRegistration_N::disposeNative);
     }
 
-    private final native void N_Dispose(long self);
+    protected final native void N_Dispose(long self);
 
     private static void disposeNative(long handle) {
         if (handle == 0) return;
@@ -43,7 +43,7 @@ class CefRegistration_N extends CefRegistration implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {

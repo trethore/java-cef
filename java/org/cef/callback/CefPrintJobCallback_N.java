@@ -34,7 +34,7 @@ class CefPrintJobCallback_N extends CefNativeAdapter implements CefPrintJobCallb
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Continue(getNativeRef(null));
             } catch (UnsatisfiedLinkError ule) {
@@ -48,5 +48,5 @@ class CefPrintJobCallback_N extends CefNativeAdapter implements CefPrintJobCallb
         }
     }
 
-    private final native void N_Continue(long self);
+    protected final native void N_Continue(long self);
 }

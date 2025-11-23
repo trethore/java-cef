@@ -590,12 +590,12 @@ public class CefApp extends CefAppHandlerAdapter {
     }
 
     private final static native boolean N_Startup(String pathToCefFramework);
-    private final native boolean N_PreInitialize();
-    private final native boolean N_Initialize(CefAppHandler appHandler, CefSettings settings);
-    private final native void N_Shutdown();
-    private final native void N_DoMessageLoopWork();
-    private final native CefVersion N_GetVersion();
-    private final native boolean N_RegisterSchemeHandlerFactory(
+    protected final native boolean N_PreInitialize();
+    protected final native boolean N_Initialize(CefAppHandler appHandler, CefSettings settings);
+    protected final native void N_Shutdown();
+    protected final native void N_DoMessageLoopWork();
+    protected final native CefVersion N_GetVersion();
+    protected final native boolean N_RegisterSchemeHandlerFactory(
             String schemeName, String domainName, CefSchemeHandlerFactory factory);
-    private final native boolean N_ClearSchemeHandlerFactories();
+    protected final native boolean N_ClearSchemeHandlerFactories();
 }

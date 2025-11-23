@@ -24,6 +24,7 @@ import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefFocusHandler;
+import org.cef.handler.CefAudioHandler;
 import org.cef.handler.CefJSDialogHandler;
 import org.cef.handler.CefKeyboardHandler;
 import org.cef.handler.CefLifeSpanHandler;
@@ -76,6 +77,7 @@ public class CefClient extends CefClientHandler
     private CefDownloadHandler downloadHandler_ = null;
     private CefDragHandler dragHandler_ = null;
     private CefFocusHandler focusHandler_ = null;
+    private CefAudioHandler audioHandler_ = null;
     private CefJSDialogHandler jsDialogHandler_ = null;
     private CefKeyboardHandler keyboardHandler_ = null;
     private CefLifeSpanHandler lifeSpanHandler_ = null;
@@ -135,6 +137,11 @@ public class CefClient extends CefClientHandler
         return createBrowser(url, isOffscreenRendered, isTransparent, null);
     }
 
+    // Backwards-compatible helper used by older call sites.
+    public CefBrowser createBrowser(String url, boolean isTransparent) {
+        return createBrowser(url, false /* isOffscreenRendered */, isTransparent, null);
+    }
+
     public CefBrowser createBrowser(String url, boolean isOffscreenRendered, boolean isTransparent,
             CefRequestContext context) {
         if (isDisposed_)
@@ -178,6 +185,11 @@ public class CefClient extends CefClientHandler
     @Override
     protected CefDisplayHandler getDisplayHandler() {
         return this;
+    }
+
+    @Override
+    protected CefAudioHandler getAudioHandler() {
+        return audioHandler_;
     }
 
     @Override
@@ -299,6 +311,17 @@ public class CefClient extends CefClientHandler
 
     public void removeDisplayHandler() {
         displayHandler_ = null;
+    }
+
+    // CefAudioHandler
+
+    public CefClient addAudioHandler(CefAudioHandler handler) {
+        if (audioHandler_ == null) audioHandler_ = handler;
+        return this;
+    }
+
+    public void removeAudioHandler() {
+        audioHandler_ = null;
     }
 
     @Override

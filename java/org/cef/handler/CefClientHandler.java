@@ -311,23 +311,23 @@ public abstract class CefClientHandler implements CefNative {
         }
     }
 
-    private final native void N_CefClientHandler_CTOR();
-    private final native void N_addMessageRouter(CefMessageRouter h);
-    private final native void N_removeContextMenuHandler(CefContextMenuHandler h);
-    private final native void N_removeDialogHandler(CefDialogHandler h);
-    private final native void N_removeDisplayHandler(CefDisplayHandler h);
-    private final native void N_removeAudioHandler(CefAudioHandler h);
-    private final native void N_removeDownloadHandler(CefDownloadHandler h);
-    private final native void N_removeDragHandler(CefDragHandler h);
-    private final native void N_removeFocusHandler(CefFocusHandler h);
-    private final native void N_removeJSDialogHandler(CefJSDialogHandler h);
-    private final native void N_removeKeyboardHandler(CefKeyboardHandler h);
-    private final native void N_removeLifeSpanHandler(CefLifeSpanHandler h);
-    private final native void N_removeLoadHandler(CefLoadHandler h);
-    private final native void N_removePrintHandler(CefPrintHandler h);
-    private final native void N_removeMessageRouter(CefMessageRouter h);
-    private final native void N_removeRenderHandler(CefRenderHandler h);
-    private final native void N_removeRequestHandler(CefRequestHandler h);
-    private final native void N_removeWindowHandler(CefWindowHandler h);
-    private final native void N_CefClientHandler_DTOR();
+    protected final native void N_CefClientHandler_CTOR();
+    protected final native void N_addMessageRouter(CefMessageRouter h);
+    protected final native void N_removeContextMenuHandler(CefContextMenuHandler h);
+    protected final native void N_removeDialogHandler(CefDialogHandler h);
+    protected final native void N_removeDisplayHandler(CefDisplayHandler h);
+    protected final native void N_removeAudioHandler(CefAudioHandler h);
+    protected final native void N_removeDownloadHandler(CefDownloadHandler h);
+    protected final native void N_removeDragHandler(CefDragHandler h);
+    protected final native void N_removeFocusHandler(CefFocusHandler h);
+    protected final native void N_removeJSDialogHandler(CefJSDialogHandler h);
+    protected final native void N_removeKeyboardHandler(CefKeyboardHandler h);
+    protected final native void N_removeLifeSpanHandler(CefLifeSpanHandler h);
+    protected final native void N_removeLoadHandler(CefLoadHandler h);
+    protected final native void N_removePrintHandler(CefPrintHandler h);
+    protected final native void N_removeMessageRouter(CefMessageRouter h);
+    protected final native void N_removeRenderHandler(CefRenderHandler h);
+    protected final native void N_removeRequestHandler(CefRequestHandler h);
+    protected final native void N_removeWindowHandler(CefWindowHandler h);
+    protected final native void N_CefClientHandler_DTOR();
 }

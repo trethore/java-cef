@@ -9,7 +9,7 @@ import org.cef.misc.CefCleanup;
 
 class CefPostDataElement_N extends CefPostDataElement implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
 
     @Override
@@ -131,7 +131,7 @@ class CefPostDataElement_N extends CefPostDataElement implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {
@@ -140,14 +140,14 @@ class CefPostDataElement_N extends CefPostDataElement implements CefNative {
         }
     }
 
-    private final native static CefPostDataElement_N N_Create();
-    private final native void N_Dispose(long self);
-    private final native boolean N_IsReadOnly(long self);
-    private final native void N_SetToEmpty(long self);
-    private final native void N_SetToFile(long self, String fileName);
-    private final native void N_SetToBytes(long self, int size, byte[] bytes);
-    private final native Type N_GetType(long self);
-    private final native String N_GetFile(long self);
-    private final native int N_GetBytesCount(long self);
-    private final native int N_GetBytes(long self, int size, byte[] bytes);
+    protected final native static CefPostDataElement_N N_Create();
+    protected final native void N_Dispose(long self);
+    protected final native boolean N_IsReadOnly(long self);
+    protected final native void N_SetToEmpty(long self);
+    protected final native void N_SetToFile(long self, String fileName);
+    protected final native void N_SetToBytes(long self, int size, byte[] bytes);
+    protected final native Type N_GetType(long self);
+    protected final native String N_GetFile(long self);
+    protected final native int N_GetBytesCount(long self);
+    protected final native int N_GetBytes(long self, int size, byte[] bytes);
 }

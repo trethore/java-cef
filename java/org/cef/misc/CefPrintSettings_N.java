@@ -12,7 +12,7 @@ import java.util.Vector;
 
 class CefPrintSettings_N extends CefPrintSettings implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
 
     @Override
@@ -268,7 +268,7 @@ class CefPrintSettings_N extends CefPrintSettings implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {
@@ -277,30 +277,30 @@ class CefPrintSettings_N extends CefPrintSettings implements CefNative {
         }
     }
 
-    private final native static CefPrintSettings_N N_Create();
-    private final native void N_Dispose(long self);
-    private final native boolean N_IsValid(long self);
-    private final native boolean N_IsReadOnly(long self);
-    private final native void N_SetOrientation(long self, boolean landscape);
-    private final native boolean N_IsLandscape(long self);
-    private final native void N_SetPrinterPrintableArea(long self,
+    protected final native static CefPrintSettings_N N_Create();
+    protected final native void N_Dispose(long self);
+    protected final native boolean N_IsValid(long self);
+    protected final native boolean N_IsReadOnly(long self);
+    protected final native void N_SetOrientation(long self, boolean landscape);
+    protected final native boolean N_IsLandscape(long self);
+    protected final native void N_SetPrinterPrintableArea(long self,
             Dimension physical_size_device_units, Rectangle printable_area_device_units,
             boolean landscape_needs_flip);
-    private final native void N_SetDeviceName(long self, String name);
-    private final native String N_GetDeviceName(long self);
-    private final native void N_SetDPI(long self, int dpi);
-    private final native int N_GetDPI(long self);
-    private final native void N_SetPageRanges(long self, Vector<CefPageRange> ranges);
-    private final native int N_GetPageRangesCount(long self);
-    private final native void N_GetPageRanges(long self, Vector<CefPageRange> ranges);
-    private final native void N_SetSelectionOnly(long self, boolean selection_only);
-    private final native boolean N_IsSelectionOnly(long self);
-    private final native void N_SetCollate(long self, boolean collate);
-    private final native boolean N_WillCollate(long self);
-    private final native void N_SetColorModel(long self, ColorModel model);
-    private final native ColorModel N_GetColorModel(long self);
-    private final native void N_SetCopies(long self, int copies);
-    private final native int N_GetCopies(long self);
-    private final native void N_SetDuplexMode(long self, DuplexMode mode);
-    private final native DuplexMode N_GetDuplexMode(long self);
+    protected final native void N_SetDeviceName(long self, String name);
+    protected final native String N_GetDeviceName(long self);
+    protected final native void N_SetDPI(long self, int dpi);
+    protected final native int N_GetDPI(long self);
+    protected final native void N_SetPageRanges(long self, Vector<CefPageRange> ranges);
+    protected final native int N_GetPageRangesCount(long self);
+    protected final native void N_GetPageRanges(long self, Vector<CefPageRange> ranges);
+    protected final native void N_SetSelectionOnly(long self, boolean selection_only);
+    protected final native boolean N_IsSelectionOnly(long self);
+    protected final native void N_SetCollate(long self, boolean collate);
+    protected final native boolean N_WillCollate(long self);
+    protected final native void N_SetColorModel(long self, ColorModel model);
+    protected final native ColorModel N_GetColorModel(long self);
+    protected final native void N_SetCopies(long self, int copies);
+    protected final native int N_GetCopies(long self);
+    protected final native void N_SetDuplexMode(long self, DuplexMode mode);
+    protected final native DuplexMode N_GetDuplexMode(long self);
 }

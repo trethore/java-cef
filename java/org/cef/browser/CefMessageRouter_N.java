@@ -10,7 +10,7 @@ import org.cef.misc.CefCleanup;
 
 class CefMessageRouter_N extends CefMessageRouter implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
 
     @Override
@@ -84,7 +84,7 @@ class CefMessageRouter_N extends CefMessageRouter implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {
@@ -93,11 +93,11 @@ class CefMessageRouter_N extends CefMessageRouter implements CefNative {
         }
     }
 
-    private final native static CefMessageRouter_N N_Create(CefMessageRouterConfig config);
-    private final native void N_Dispose(long self);
-    private final native boolean N_AddHandler(
+    protected final native static CefMessageRouter_N N_Create(CefMessageRouterConfig config);
+    protected final native void N_Dispose(long self);
+    protected final native boolean N_AddHandler(
             long self, CefMessageRouterHandler handler, boolean first);
-    private final native boolean N_RemoveHandler(long self, CefMessageRouterHandler handler);
-    private final native void N_CancelPending(
+    protected final native boolean N_RemoveHandler(long self, CefMessageRouterHandler handler);
+    protected final native void N_CancelPending(
             long self, CefBrowser browser, CefMessageRouterHandler handler);
 }

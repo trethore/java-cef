@@ -508,61 +508,61 @@ class CefMenuModel_N extends CefNativeAdapter implements CefMenuModel {
         return false;
     }
 
-    private final native boolean N_Clear(long self);
-    private final native int N_GetCount(long self);
-    private final native boolean N_AddSeparator(long self);
-    private final native boolean N_AddItem(long self, int command_id, String label);
-    private final native boolean N_AddCheckItem(long self, int command_id, String label);
-    private final native boolean N_AddRadioItem(
+    protected final native boolean N_Clear(long self);
+    protected final native int N_GetCount(long self);
+    protected final native boolean N_AddSeparator(long self);
+    protected final native boolean N_AddItem(long self, int command_id, String label);
+    protected final native boolean N_AddCheckItem(long self, int command_id, String label);
+    protected final native boolean N_AddRadioItem(
             long self, int command_id, String label, int group_id);
-    private final native CefMenuModel N_AddSubMenu(long self, int command_id, String label);
-    private final native boolean N_InsertSeparatorAt(long self, int index);
-    private final native boolean N_InsertItemAt(long self, int index, int command_id, String label);
-    private final native boolean N_InsertCheckItemAt(
+    protected final native CefMenuModel N_AddSubMenu(long self, int command_id, String label);
+    protected final native boolean N_InsertSeparatorAt(long self, int index);
+    protected final native boolean N_InsertItemAt(long self, int index, int command_id, String label);
+    protected final native boolean N_InsertCheckItemAt(
             long self, int index, int command_id, String label);
-    private final native boolean N_InsertRadioItemAt(
+    protected final native boolean N_InsertRadioItemAt(
             long self, int index, int command_id, String label, int group_id);
-    private final native CefMenuModel N_InsertSubMenuAt(
+    protected final native CefMenuModel N_InsertSubMenuAt(
             long self, int index, int command_id, String label);
-    private final native boolean N_Remove(long self, int command_id);
-    private final native boolean N_RemoveAt(long self, int index);
-    private final native int N_GetIndexOf(long self, int command_id);
-    private final native int N_GetCommandIdAt(long self, int index);
-    private final native boolean N_SetCommandIdAt(long self, int index, int command_id);
-    private final native String N_GetLabel(long self, int command_id);
-    private final native String N_GetLabelAt(long self, int index);
-    private final native boolean N_SetLabel(long self, int command_id, String label);
-    private final native boolean N_SetLabelAt(long self, int index, String label);
-    private final native MenuItemType N_GetType(long self, int command_id);
-    private final native MenuItemType N_GetTypeAt(long self, int index);
-    private final native int N_GetGroupId(long self, int command_id);
-    private final native int N_GetGroupIdAt(long self, int index);
-    private final native boolean N_SetGroupId(long self, int command_id, int group_id);
-    private final native boolean N_SetGroupIdAt(long self, int index, int group_id);
-    private final native CefMenuModel N_GetSubMenu(long self, int command_id);
-    private final native CefMenuModel N_GetSubMenuAt(long self, int index);
-    private final native boolean N_IsVisible(long self, int command_id);
-    private final native boolean N_IsVisibleAt(long self, int index);
-    private final native boolean N_SetVisible(long self, int command_id, boolean visible);
-    private final native boolean N_SetVisibleAt(long self, int index, boolean visible);
-    private final native boolean N_IsEnabled(long self, int command_id);
-    private final native boolean N_IsEnabledAt(long self, int index);
-    private final native boolean N_SetEnabled(long self, int command_id, boolean enabled);
-    private final native boolean N_SetEnabledAt(long self, int index, boolean enabled);
-    private final native boolean N_IsChecked(long self, int command_id);
-    private final native boolean N_IsCheckedAt(long self, int index);
-    private final native boolean N_SetChecked(long self, int command_id, boolean checked);
-    private final native boolean N_SetCheckedAt(long self, int index, boolean checked);
-    private final native boolean N_HasAccelerator(long self, int command_id);
-    private final native boolean N_HasAcceleratorAt(long self, int index);
-    private final native boolean N_SetAccelerator(long self, int command_id, int key_code,
+    protected final native boolean N_Remove(long self, int command_id);
+    protected final native boolean N_RemoveAt(long self, int index);
+    protected final native int N_GetIndexOf(long self, int command_id);
+    protected final native int N_GetCommandIdAt(long self, int index);
+    protected final native boolean N_SetCommandIdAt(long self, int index, int command_id);
+    protected final native String N_GetLabel(long self, int command_id);
+    protected final native String N_GetLabelAt(long self, int index);
+    protected final native boolean N_SetLabel(long self, int command_id, String label);
+    protected final native boolean N_SetLabelAt(long self, int index, String label);
+    protected final native MenuItemType N_GetType(long self, int command_id);
+    protected final native MenuItemType N_GetTypeAt(long self, int index);
+    protected final native int N_GetGroupId(long self, int command_id);
+    protected final native int N_GetGroupIdAt(long self, int index);
+    protected final native boolean N_SetGroupId(long self, int command_id, int group_id);
+    protected final native boolean N_SetGroupIdAt(long self, int index, int group_id);
+    protected final native CefMenuModel N_GetSubMenu(long self, int command_id);
+    protected final native CefMenuModel N_GetSubMenuAt(long self, int index);
+    protected final native boolean N_IsVisible(long self, int command_id);
+    protected final native boolean N_IsVisibleAt(long self, int index);
+    protected final native boolean N_SetVisible(long self, int command_id, boolean visible);
+    protected final native boolean N_SetVisibleAt(long self, int index, boolean visible);
+    protected final native boolean N_IsEnabled(long self, int command_id);
+    protected final native boolean N_IsEnabledAt(long self, int index);
+    protected final native boolean N_SetEnabled(long self, int command_id, boolean enabled);
+    protected final native boolean N_SetEnabledAt(long self, int index, boolean enabled);
+    protected final native boolean N_IsChecked(long self, int command_id);
+    protected final native boolean N_IsCheckedAt(long self, int index);
+    protected final native boolean N_SetChecked(long self, int command_id, boolean checked);
+    protected final native boolean N_SetCheckedAt(long self, int index, boolean checked);
+    protected final native boolean N_HasAccelerator(long self, int command_id);
+    protected final native boolean N_HasAcceleratorAt(long self, int index);
+    protected final native boolean N_SetAccelerator(long self, int command_id, int key_code,
             boolean shift_pressed, boolean ctrl_pressed, boolean alt_pressed);
-    private final native boolean N_SetAcceleratorAt(long self, int index, int key_code,
+    protected final native boolean N_SetAcceleratorAt(long self, int index, int key_code,
             boolean shift_pressed, boolean ctrl_pressed, boolean alt_pressed);
-    private final native boolean N_RemoveAccelerator(long self, int command_id);
-    private final native boolean N_RemoveAcceleratorAt(long self, int index);
-    private final native boolean N_GetAccelerator(long self, int command_id, IntRef key_code,
+    protected final native boolean N_RemoveAccelerator(long self, int command_id);
+    protected final native boolean N_RemoveAcceleratorAt(long self, int index);
+    protected final native boolean N_GetAccelerator(long self, int command_id, IntRef key_code,
             BoolRef shift_pressed, BoolRef ctrl_pressed, BoolRef alt_pressed);
-    private final native boolean N_GetAcceleratorAt(long self, int index, IntRef key_code,
+    protected final native boolean N_GetAcceleratorAt(long self, int index, IntRef key_code,
             BoolRef shift_pressed, BoolRef ctrl_pressed, BoolRef alt_pressed);
 }

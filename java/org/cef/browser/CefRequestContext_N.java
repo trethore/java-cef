@@ -13,7 +13,7 @@ import java.util.Map;
 
 class CefRequestContext_N extends CefRequestContext implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private static CefRequestContext_N globalInstance = null;
     private CefRequestContextHandler handler = null;
 
@@ -135,11 +135,11 @@ class CefRequestContext_N extends CefRequestContext implements CefNative {
     private final static native CefRequestContext_N N_GetGlobalContext();
     private final static native CefRequestContext_N N_CreateContext(
             CefRequestContextHandler handler);
-    private final native boolean N_IsGlobal();
-    private final native boolean N_HasPreference(String name);
-    private final native Object N_GetPreference(String name);
-    private final native Map<String, Object> N_GetAllPreferences(boolean includeDefaults);
-    private final native boolean N_CanSetPreference(String name);
-    private final native String N_SetPreference(String name, Object value);
-    private final native void N_CefRequestContext_DTOR();
+    protected final native boolean N_IsGlobal();
+    protected final native boolean N_HasPreference(String name);
+    protected final native Object N_GetPreference(String name);
+    protected final native Map<String, Object> N_GetAllPreferences(boolean includeDefaults);
+    protected final native boolean N_CanSetPreference(String name);
+    protected final native String N_SetPreference(String name, Object value);
+    protected final native void N_CefRequestContext_DTOR();
 }

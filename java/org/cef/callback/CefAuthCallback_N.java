@@ -39,7 +39,7 @@ class CefAuthCallback_N extends CefNativeAdapter implements CefAuthCallback {
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Cancel(getNativeRef(null));
             } catch (UnsatisfiedLinkError ule) {
@@ -53,6 +53,6 @@ class CefAuthCallback_N extends CefNativeAdapter implements CefAuthCallback {
         }
     }
 
-    private final native void N_Continue(long self, String username, String password);
-    private final native void N_Cancel(long self);
+    protected final native void N_Continue(long self, String username, String password);
+    protected final native void N_Cancel(long self);
 }

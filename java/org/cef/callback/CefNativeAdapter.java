@@ -6,7 +6,7 @@ import org.cef.misc.CefCleanup;
 
 public class CefNativeAdapter implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
 
     @Override

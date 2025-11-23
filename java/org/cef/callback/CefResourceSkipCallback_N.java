@@ -16,5 +16,5 @@ class CefResourceSkipCallback_N extends CefNativeAdapter implements CefResourceS
         }
     }
 
-    private final native void N_Continue(long self, long bytes_skipped);
+    protected final native void N_Continue(long self, long bytes_skipped);
 }

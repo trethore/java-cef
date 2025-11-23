@@ -52,7 +52,7 @@ class CefDownloadItemCallback_N extends CefNativeAdapter implements CefDownloadI
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(getNativeRef(null));
             } catch (UnsatisfiedLinkError ule) {
@@ -66,8 +66,8 @@ class CefDownloadItemCallback_N extends CefNativeAdapter implements CefDownloadI
         }
     }
 
-    private final native void N_Dispose(long self);
-    private final native void N_Cancel(long self);
-    private final native void N_Pause(long self);
-    private final native void N_Resume(long self);
+    protected final native void N_Dispose(long self);
+    protected final native void N_Cancel(long self);
+    protected final native void N_Pause(long self);
+    protected final native void N_Resume(long self);
 }

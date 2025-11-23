@@ -139,16 +139,16 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
         return result + "]";
     }
 
-    private final native void N_Reset(long self);
-    private final native String N_GetProgram(long self);
-    private final native void N_SetProgram(long self, String program);
-    private final native boolean N_HasSwitches(long self);
-    private final native boolean N_HasSwitch(long self, String name);
-    private final native String N_GetSwitchValue(long self, String name);
-    private final native Map<String, String> N_GetSwitches(long self);
-    private final native void N_AppendSwitch(long self, String name);
-    private final native void N_AppendSwitchWithValue(long self, String name, String value);
-    private final native boolean N_HasArguments(long self);
-    private final native Vector<String> N_GetArguments(long self);
-    private final native void N_AppendArgument(long self, String argument);
+    protected final native void N_Reset(long self);
+    protected final native String N_GetProgram(long self);
+    protected final native void N_SetProgram(long self, String program);
+    protected final native boolean N_HasSwitches(long self);
+    protected final native boolean N_HasSwitch(long self, String name);
+    protected final native String N_GetSwitchValue(long self, String name);
+    protected final native Map<String, String> N_GetSwitches(long self);
+    protected final native void N_AppendSwitch(long self, String name);
+    protected final native void N_AppendSwitchWithValue(long self, String name, String value);
+    protected final native boolean N_HasArguments(long self);
+    protected final native Vector<String> N_GetArguments(long self);
+    protected final native void N_AppendArgument(long self, String argument);
 }

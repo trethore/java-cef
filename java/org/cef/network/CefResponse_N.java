@@ -12,7 +12,7 @@ import java.util.Map;
 
 class CefResponse_N extends CefResponse implements CefNative {
     // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+    protected long N_CefHandle = 0;
     private final CefCleanup.Registration cleanup = new CefCleanup.Registration();
 
     @Override
@@ -180,7 +180,7 @@ class CefResponse_N extends CefResponse implements CefNative {
             N_CefHandle = handle;
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Dispose(N_CefHandle);
             } catch (UnsatisfiedLinkError ule) {
@@ -189,20 +189,20 @@ class CefResponse_N extends CefResponse implements CefNative {
         }
     }
 
-    private final native static CefResponse_N N_Create();
-    private final native void N_Dispose(long self);
-    private final native boolean N_IsReadOnly(long self);
-    private final native ErrorCode N_GetError(long self);
-    private final native void N_SetError(long self, ErrorCode errorCode);
-    private final native int N_GetStatus(long self);
-    private final native void N_SetStatus(long self, int status);
-    private final native String N_GetStatusText(long self);
-    private final native void N_SetStatusText(long self, String statusText);
-    private final native String N_GetMimeType(long self);
-    private final native void N_SetMimeType(long self, String mimeType);
-    private final native String N_GetHeaderByName(long self, String name);
-    private final native void N_SetHeaderByName(
+    protected final native static CefResponse_N N_Create();
+    protected final native void N_Dispose(long self);
+    protected final native boolean N_IsReadOnly(long self);
+    protected final native ErrorCode N_GetError(long self);
+    protected final native void N_SetError(long self, ErrorCode errorCode);
+    protected final native int N_GetStatus(long self);
+    protected final native void N_SetStatus(long self, int status);
+    protected final native String N_GetStatusText(long self);
+    protected final native void N_SetStatusText(long self, String statusText);
+    protected final native String N_GetMimeType(long self);
+    protected final native void N_SetMimeType(long self, String mimeType);
+    protected final native String N_GetHeaderByName(long self, String name);
+    protected final native void N_SetHeaderByName(
             long self, String name, String value, boolean overwrite);
-    private final native void N_GetHeaderMap(long self, Map<String, String> headerMap);
-    private final native void N_SetHeaderMap(long self, Map<String, String> headerMap);
+    protected final native void N_GetHeaderMap(long self, Map<String, String> headerMap);
+    protected final native void N_SetHeaderMap(long self, Map<String, String> headerMap);
 }

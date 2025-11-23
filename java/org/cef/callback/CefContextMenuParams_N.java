@@ -189,22 +189,22 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
         return 0;
     }
 
-    private final native int N_GetXCoord(long self);
-    private final native int N_GetYCoord(long self);
-    private final native int N_GetTypeFlags(long self);
-    private final native String N_GetLinkUrl(long self);
-    private final native String N_GetUnfilteredLinkUrl(long self);
-    private final native String N_GetSourceUrl(long self);
-    private final native boolean N_HasImageContents(long self);
-    private final native String N_GetPageUrl(long self);
-    private final native String N_GetFrameUrl(long self);
-    private final native String N_GetFrameCharset(long self);
-    private final native MediaType N_GetMediaType(long self);
-    private final native int N_GetMediaStateFlags(long self);
-    private final native String N_GetSelectionText(long self);
-    private final native String N_GetMisspelledWord(long self);
-    private final native boolean N_GetDictionarySuggestions(long self, Vector<String> suggestions);
-    private final native boolean N_IsEditable(long self);
-    private final native boolean N_IsSpellCheckEnabled(long self);
-    private final native int N_GetEditStateFlags(long self);
+    protected final native int N_GetXCoord(long self);
+    protected final native int N_GetYCoord(long self);
+    protected final native int N_GetTypeFlags(long self);
+    protected final native String N_GetLinkUrl(long self);
+    protected final native String N_GetUnfilteredLinkUrl(long self);
+    protected final native String N_GetSourceUrl(long self);
+    protected final native boolean N_HasImageContents(long self);
+    protected final native String N_GetPageUrl(long self);
+    protected final native String N_GetFrameUrl(long self);
+    protected final native String N_GetFrameCharset(long self);
+    protected final native MediaType N_GetMediaType(long self);
+    protected final native int N_GetMediaStateFlags(long self);
+    protected final native String N_GetSelectionText(long self);
+    protected final native String N_GetMisspelledWord(long self);
+    protected final native boolean N_GetDictionarySuggestions(long self, Vector<String> suggestions);
+    protected final native boolean N_IsEditable(long self);
+    protected final native boolean N_IsSpellCheckEnabled(long self);
+    protected final native int N_GetEditStateFlags(long self);
 }

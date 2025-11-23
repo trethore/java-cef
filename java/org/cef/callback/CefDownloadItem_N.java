@@ -169,20 +169,20 @@ class CefDownloadItem_N extends CefNativeAdapter implements CefDownloadItem {
         return null;
     }
 
-    private final native boolean N_IsValid(long self);
-    private final native boolean N_IsInProgress(long self);
-    private final native boolean N_IsComplete(long self);
-    private final native boolean N_IsCanceled(long self);
-    private final native long N_GetCurrentSpeed(long self);
-    private final native int N_GetPercentComplete(long self);
-    private final native long N_GetTotalBytes(long self);
-    private final native long N_GetReceivedBytes(long self);
-    private final native Date N_GetStartTime(long self);
-    private final native Date N_GetEndTime(long self);
-    private final native String N_GetFullPath(long self);
-    private final native int N_GetId(long self);
-    private final native String N_GetURL(long self);
-    private final native String N_GetSuggestedFileName(long self);
-    private final native String N_GetContentDisposition(long self);
-    private final native String N_GetMimeType(long self);
+    protected final native boolean N_IsValid(long self);
+    protected final native boolean N_IsInProgress(long self);
+    protected final native boolean N_IsComplete(long self);
+    protected final native boolean N_IsCanceled(long self);
+    protected final native long N_GetCurrentSpeed(long self);
+    protected final native int N_GetPercentComplete(long self);
+    protected final native long N_GetTotalBytes(long self);
+    protected final native long N_GetReceivedBytes(long self);
+    protected final native Date N_GetStartTime(long self);
+    protected final native Date N_GetEndTime(long self);
+    protected final native String N_GetFullPath(long self);
+    protected final native int N_GetId(long self);
+    protected final native String N_GetURL(long self);
+    protected final native String N_GetSuggestedFileName(long self);
+    protected final native String N_GetContentDisposition(long self);
+    protected final native String N_GetMimeType(long self);
 }

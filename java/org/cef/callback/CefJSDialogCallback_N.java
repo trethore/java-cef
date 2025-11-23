@@ -34,7 +34,7 @@ class CefJSDialogCallback_N extends CefNativeAdapter implements CefJSDialogCallb
             setNativeHandleUnsafe(handle);
         }
 
-        void dispose() {
+        public void dispose() {
             try {
                 N_Continue(getNativeRef(null), false, "");
             } catch (UnsatisfiedLinkError ule) {
@@ -48,5 +48,5 @@ class CefJSDialogCallback_N extends CefNativeAdapter implements CefJSDialogCallb
         }
     }
 
-    private final native void N_Continue(long self, boolean success, String user_input);
+    protected final native void N_Continue(long self, boolean success, String user_input);
 }

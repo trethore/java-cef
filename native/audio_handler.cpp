@@ -70,10 +70,11 @@ void AudioHandler::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
     return;
 
   ScopedJNIBrowser jbrowser(env, browser);
+  jobject paramsJni = jniParams(env, params);
 
   JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamStarted",
                        "(Lorg/cef/browser/CefBrowser;Lorg/cef/misc/CefAudioParameters;I)V",
-                       jbrowser.get(), nullptr, channels);
+                       jbrowser.get(), paramsJni, channels);
 }
 
 void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const float** data, int frames, int64_t pts) {

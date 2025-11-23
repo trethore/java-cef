@@ -18,7 +18,7 @@ class CefSchemeRegistrar_N extends CefNativeAdapter implements CefSchemeRegistra
         return false;
     }
 
-    private final native boolean N_AddCustomScheme(String schemeName, boolean isStandard,
+    protected final native boolean N_AddCustomScheme(String schemeName, boolean isStandard,
             boolean isLocal, boolean isDisplayIsolated, boolean isSecure, boolean isCorsEnabled,
             boolean isCspBypassing, boolean isFetchEnabled);
 }

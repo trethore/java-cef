@@ -11,7 +11,7 @@ public interface CefFrame {
     /**
      * Removes the native reference from an unused object.
      */
-    void dispose();
+    public void dispose();
 
     /**
      * Returns the globally unique identifier for this frame or an empty string if the
