@@ -673,6 +673,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    /** Convenience alias for clarity: AWT key events */
+    protected final void sendAwtKeyEvent(KeyEvent e) {
+        sendKeyEvent(e);
+    }
+
     /**
      * Send a lightweight (GLFW/LWJGL style) key event.
      * @param e The event to send.
@@ -683,6 +688,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
+    }
+
+    /** Convenience alias for clarity: GLFW/LWJGL key events */
+    protected final void sendGlfwKeyEvent(CefKeyEvent e) {
+        sendKeyEvent(e);
     }
 
     /**
@@ -697,6 +707,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    /** Convenience alias for clarity: AWT mouse events */
+    protected final void sendAwtMouseEvent(MouseEvent e) {
+        sendMouseEvent(e);
+    }
+
     /**
      * Send a lightweight (GLFW/LWJGL style) mouse event.
      * @param e The event to send.
@@ -707,6 +722,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
+    }
+
+    /** Convenience alias for clarity: GLFW/LWJGL mouse events */
+    protected final void sendGlfwMouseEvent(CefMouseEvent e) {
+        sendMouseEvent(e);
     }
 
     /**
@@ -733,6 +753,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    /** Convenience alias for clarity: GLFW/LWJGL mouse wheel events */
+    protected final void sendGlfwMouseWheelEvent(CefMouseWheelEvent e) {
+        sendMouseWheelEvent(e);
+    }
+
     /**
      * Call this method when the user drags the mouse into the web view (before
      * calling DragTargetDragOver/DragTargetLeave/DragTargetDrop).
@@ -751,6 +776,16 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    /** GLFW/LWJGL drag enter (modifiers use GLFW mask) */
+    protected final void dragTargetDragEnterGlfw(
+            CefDragData dragData, Point pos, int modifiers, int allowedOps) {
+        try {
+            N_DragTargetDragEnter2(dragData, pos, modifiers, allowedOps);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
     /**
      * Call this method each time the mouse is moved across the web view during
      * a drag operation (after calling DragTargetDragEnter and before calling
@@ -760,6 +795,15 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     protected final void dragTargetDragOver(Point pos, int modifiers, int allowedOps) {
         try {
             N_DragTargetDragOver(pos, modifiers, allowedOps);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    /** GLFW/LWJGL drag over (modifiers use GLFW mask) */
+    protected final void dragTargetDragOverGlfw(Point pos, int modifiers, int allowedOps) {
+        try {
+            N_DragTargetDragOver2(pos, modifiers, allowedOps);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -788,6 +832,15 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     protected final void dragTargetDrop(Point pos, int modifiers) {
         try {
             N_DragTargetDrop(pos, modifiers);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    /** GLFW/LWJGL drop (modifiers use GLFW mask) */
+    protected final void dragTargetDropGlfw(Point pos, int modifiers) {
+        try {
+            N_DragTargetDrop2(pos, modifiers);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -945,6 +998,10 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_DragTargetDragOver(Point pos, int modifiers, int allowed_ops);
     private final native void N_DragTargetDragLeave();
     private final native void N_DragTargetDrop(Point pos, int modifiers);
+    private final native void N_DragTargetDragEnter2(
+            CefDragData dragData, Point pos, int modifiers, int allowed_ops);
+    private final native void N_DragTargetDragOver2(Point pos, int modifiers, int allowed_ops);
+    private final native void N_DragTargetDrop2(Point pos, int modifiers);
     private final native void N_DragSourceEndedAt(Point pos, int operation);
     private final native void N_DragSourceSystemDragEnded();
     private final native void N_UpdateUI(Rectangle contentRect, Rectangle browserRect);
