@@ -5,15 +5,10 @@
 package org.cef.callback;
 
 import org.cef.misc.CefPrintSettings;
+import java.util.function.LongConsumer;
 
 class CefPrintDialogCallback_N extends CefNativeAdapter implements CefPrintDialogCallback {
     CefPrintDialogCallback_N() {}
-
-    @Override
-    protected void finalize() throws Throwable {
-        cancel();
-        super.finalize();
-    }
 
     @Override
     public void Continue(CefPrintSettings settings) {
@@ -26,10 +21,36 @@ class CefPrintDialogCallback_N extends CefNativeAdapter implements CefPrintDialo
 
     @Override
     public void cancel() {
-        try {
-            N_Cancel(getNativeRef(null));
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
+        cleanNativeResources(CefPrintDialogCallback_N::disposeNative);
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefPrintDialogCallback_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefPrintDialogCallback_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Cancel(getNativeRef(null));
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

@@ -4,18 +4,10 @@
 
 package org.cef.callback;
 
+import java.util.function.LongConsumer;
+
 class CefDownloadItemCallback_N extends CefNativeAdapter implements CefDownloadItemCallback {
     CefDownloadItemCallback_N() {}
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            N_Dispose(getNativeRef(null));
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
-        }
-        super.finalize();
-    }
 
     @Override
     public void cancel() {
@@ -41,6 +33,36 @@ class CefDownloadItemCallback_N extends CefNativeAdapter implements CefDownloadI
             N_Resume(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+        }
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefDownloadItemCallback_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefDownloadItemCallback_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Dispose(getNativeRef(null));
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

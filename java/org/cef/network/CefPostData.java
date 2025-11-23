@@ -14,12 +14,6 @@ public abstract class CefPostData {
     // This CTOR can't be called directly. Call method create() instead.
     CefPostData() {}
 
-    @Override
-    protected void finalize() throws Throwable {
-        dispose();
-        super.finalize();
-    }
-
     /**
      * Create a new CefPostData object.
      */

@@ -12,7 +12,7 @@
 #
 # Linux:      Ninja, GCC 7.5.0+, Unix Makefiles
 # MacOS:      Ninja, Xcode 12.2 to 13.0
-# Windows:    Ninja, Visual Studio 2019+
+# Windows:    Ninja, Visual Studio 2022+
 #
 # Ninja is a cross-platform open-source tool for running fast builds using
 # pre-installed platform toolchains (GNU, clang, Xcode or MSVC). It can be
@@ -23,7 +23,7 @@
 #
 # The below requirements must be met to build JCEF.
 #
-# - CMake version 3.19 or newer.
+# - CMake version 3.20 or newer.
 #
 # - Linux requirements:
 #   Currently supported distributions include Debian 10 (Buster), Ubuntu 18
@@ -41,9 +41,8 @@
 #   recommended.
 #
 # - Windows requirements:
-#   Visual Studio 2019 or newer building on Windows 7 or newer. Windows 10
-#   64-bit is recommended. Newer versions will likely also work but may not have
-#   been tested.
+#   Visual Studio 2022 or newer building on Windows 10 or newer. Newer versions
+#   will likely also work but may not have been tested.
 #
 # BUILD EXAMPLES
 #
@@ -86,24 +85,24 @@
 #     > ninja
 #
 # To perform a Windows build using a 32-bit CEF binary distribution:
-#   Using the Visual Studio 2019 IDE:
-#     > cmake -G "Visual Studio 16" -A Win32 ..
+#   Using the Visual Studio 2022 IDE:
+#     > cmake -G "Visual Studio 17 2022" -A Win32 ..
 #     Open jcef.sln in Visual Studio and select Build > Build Solution.
 #
-#   Using Ninja with Visual Studio 2019 command-line tools:
+#   Using Ninja with Visual Studio 2022 command-line tools:
 #     (this path may be different depending on your Visual Studio installation)
-#     > "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars32.bat"
+#     > "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars32.bat"
 #     > cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ..
 #     > ninja
 #
 # To perform a Windows build using a 64-bit CEF binary distribution:
-#   Using the Visual Studio 2019 IDE:
-#     > cmake -G "Visual Studio 16" -A x64 ..
+#   Using the Visual Studio 2022 IDE:
+#     > cmake -G "Visual Studio 17 2022" -A x64 ..
 #     Open jcef.sln in Visual Studio and select Build > Build Solution.
 #
-#   Using Ninja with Visual Studio 2019 command-line tools:
+#   Using Ninja with Visual Studio 2022 command-line tools:
 #     (this path may be different depending on your Visual Studio installation)
-#     > "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
+#     > "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
 #     > cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ..
 #     > ninja
 
@@ -111,8 +110,8 @@
 # Shared configuration.
 #
 
-# For VS2019 and Xcode 12+ support.
-cmake_minimum_required(VERSION 3.19)
+# For VS2022 and Xcode 12+ support.
+cmake_minimum_required(VERSION 3.20)
 
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
@@ -187,23 +186,12 @@ find_package(CEF REQUIRED)
 
 # Support specification of the Python executable path via the command-line.
 if(DEFINED ENV{PYTHON_EXECUTABLE})
-  file(TO_CMAKE_PATH "$ENV{PYTHON_EXECUTABLE}" PYTHON_EXECUTABLE)
+  set(Python3_EXECUTABLE "$ENV{PYTHON_EXECUTABLE}")
 endif()
 
-if(NOT PYTHON_EXECUTABLE)
-  unset(PYTHON_EXECUTABLE)
-
-  # Find the python interpreter.
-  find_package(PythonInterp)
-
-  if(NOT ${PYTHONINTERP_FOUND})
-    message(FATAL_ERROR "A Python installation is required. Set the "
-                        "PYTHON_EXECUTABLE environment variable to explicitly "
-                        "specify the Python executable path.")
-  endif()
-endif()
-
-message(STATUS "Using Python: ${PYTHON_EXECUTABLE}")
+find_package(Python3 3.10 COMPONENTS Interpreter REQUIRED)
+set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
+message(STATUS "Using Python (>=3.10): ${PYTHON_EXECUTABLE}")
 
 
 #
@@ -211,7 +199,7 @@ message(STATUS "Using Python: ${PYTHON_EXECUTABLE}")
 #
 
 # Minimum required Java version.
-set(JDK_MIN_VERSION 1.7)
+set(JDK_MIN_VERSION 17)
 
 set(JAVA_FATAL_ERROR "A Java installation is required. Set the JAVA_HOME "
                      "environment variable to explicitly specify the Java "

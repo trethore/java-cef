@@ -174,12 +174,6 @@ public abstract class CefMessageRouter {
     // This CTOR can't be called directly. Call method create() instead.
     CefMessageRouter() {}
 
-    @Override
-    protected void finalize() throws Throwable {
-        dispose();
-        super.finalize();
-    }
-
     /**
      * Create a new router with the default configuration. The addHandler() method should be called
      * to add a handler.

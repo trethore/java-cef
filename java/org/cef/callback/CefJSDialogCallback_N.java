@@ -4,14 +4,10 @@
 
 package org.cef.callback;
 
+import java.util.function.LongConsumer;
+
 class CefJSDialogCallback_N extends CefNativeAdapter implements CefJSDialogCallback {
     CefJSDialogCallback_N() {}
-
-    @Override
-    protected void finalize() throws Throwable {
-        Continue(false, "");
-        super.finalize();
-    }
 
     @Override
     public void Continue(boolean success, String user_input) {
@@ -19,6 +15,36 @@ class CefJSDialogCallback_N extends CefNativeAdapter implements CefJSDialogCallb
             N_Continue(getNativeRef(null), success, user_input);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+        }
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefJSDialogCallback_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefJSDialogCallback_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Continue(getNativeRef(null), false, "");
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

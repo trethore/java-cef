@@ -5,6 +5,7 @@
 package org.cef.browser;
 
 import org.cef.callback.CefNativeAdapter;
+import java.util.function.LongConsumer;
 
 /**
  * This class represents all methods which are connected to the
@@ -15,18 +16,8 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     CefFrame_N() {}
 
     @Override
-    protected void finalize() throws Throwable {
-        dispose();
-        super.finalize();
-    }
-
-    @Override
     public void dispose() {
-        try {
-            N_Dispose(getNativeRef(null));
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
-        }
+        cleanNativeResources(CefFrame_N::disposeNative);
     }
 
     @Override
@@ -145,6 +136,36 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
             N_Paste(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+        }
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefFrame_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefFrame_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Dispose(getNativeRef(null));
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

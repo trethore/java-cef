@@ -26,12 +26,6 @@ public abstract class CefURLRequest {
     // This CTOR can't be called directly. Call method create() instead.
     CefURLRequest() {}
 
-    @Override
-    protected void finalize() throws Throwable {
-        dispose();
-        super.finalize();
-    }
-
     /**
      * Create a new URL request. Only GET, POST, HEAD, DELETE and PUT request
      * methods are supported. Multiple post data elements are not supported and

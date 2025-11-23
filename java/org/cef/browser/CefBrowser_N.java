@@ -28,6 +28,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
+import java.util.function.LongConsumer;
 import java.util.concurrent.CompletableFuture;
 
 import javax.swing.SwingUtilities;
@@ -66,6 +67,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             settings_ = settings.clone();
         else
             settings_ = new CefBrowserSettings();
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefBrowser_N::closeNativeHandle;
     }
 
     protected String getUrl() {
@@ -237,12 +243,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             err.printStackTrace();
         }
         return 0;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        close(true);
-        super.finalize();
     }
 
     @Override
@@ -493,6 +493,31 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             N_Close(force);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+        }
+    }
+
+    private static void closeNativeHandle(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).forceClose();
+    }
+
+    private static final class CleanupInvoker extends CefBrowser_N {
+        private CleanupInvoker(long handle) {
+            super(null, null, null, null, null, null);
+            setNativeHandleUnsafe(handle);
+        }
+
+        void forceClose() {
+            try {
+                N_Close(true);
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null; // avoid cleaner recursion for helper
         }
     }
 

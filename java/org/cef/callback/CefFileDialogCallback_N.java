@@ -5,15 +5,10 @@
 package org.cef.callback;
 
 import java.util.Vector;
+import java.util.function.LongConsumer;
 
 class CefFileDialogCallback_N extends CefNativeAdapter implements CefFileDialogCallback {
     CefFileDialogCallback_N() {}
-
-    @Override
-    protected void finalize() throws Throwable {
-        Cancel();
-        super.finalize();
-    }
 
     @Override
     public void Continue(Vector<String> filePaths) {
@@ -26,10 +21,36 @@ class CefFileDialogCallback_N extends CefNativeAdapter implements CefFileDialogC
 
     @Override
     public void Cancel() {
-        try {
-            N_Cancel(getNativeRef(null));
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
+        cleanNativeResources(CefFileDialogCallback_N::disposeNative);
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefFileDialogCallback_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefFileDialogCallback_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Cancel(getNativeRef(null));
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

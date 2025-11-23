@@ -29,12 +29,6 @@ public abstract class CefDragData {
     // This CTOR can't be called directly. Call method create() instead.
     CefDragData() {}
 
-    @Override
-    protected void finalize() throws Throwable {
-        dispose();
-        super.finalize();
-    }
-
     /**
      * Create a new CefDragData object.
      */

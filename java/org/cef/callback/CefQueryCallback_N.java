@@ -4,14 +4,10 @@
 
 package org.cef.callback;
 
+import java.util.function.LongConsumer;
+
 class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
     CefQueryCallback_N() {}
-
-    @Override
-    protected void finalize() throws Throwable {
-        failure(-1, "Unexpected call to CefQueryCallback_N::finalize()");
-        super.finalize();
-    }
 
     @Override
     public void success(String response) {
@@ -28,6 +24,36 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
             N_Failure(getNativeRef(null), error_code, error_message);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+        }
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefQueryCallback_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefQueryCallback_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Failure(getNativeRef(null), -1, "Unexpected cleanup of CefQueryCallback_N");
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

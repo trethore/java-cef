@@ -4,14 +4,10 @@
 
 package org.cef.callback;
 
+import java.util.function.LongConsumer;
+
 class CefPrintJobCallback_N extends CefNativeAdapter implements CefPrintJobCallback {
     CefPrintJobCallback_N() {}
-
-    @Override
-    protected void finalize() throws Throwable {
-        Continue();
-        super.finalize();
-    }
 
     @Override
     public void Continue() {
@@ -19,6 +15,36 @@ class CefPrintJobCallback_N extends CefNativeAdapter implements CefPrintJobCallb
             N_Continue(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+        }
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefPrintJobCallback_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefPrintJobCallback_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Continue(getNativeRef(null));
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

@@ -15,10 +15,4 @@ abstract class CefRegistration {
      * Removes the native reference from an unused object.
      */
     public abstract void dispose();
-
-    @Override
-    public void finalize() throws Throwable {
-        dispose();
-        super.finalize();
-    }
 }

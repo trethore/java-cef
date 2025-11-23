@@ -4,14 +4,10 @@
 
 package org.cef.callback;
 
+import java.util.function.LongConsumer;
+
 class CefAuthCallback_N extends CefNativeAdapter implements CefAuthCallback {
     CefAuthCallback_N() {}
-
-    @Override
-    protected void finalize() throws Throwable {
-        cancel();
-        super.finalize();
-    }
 
     @Override
     public void Continue(String username, String password) {
@@ -24,10 +20,36 @@ class CefAuthCallback_N extends CefNativeAdapter implements CefAuthCallback {
 
     @Override
     public void cancel() {
-        try {
-            N_Cancel(getNativeRef(null));
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
+        cleanNativeResources(CefAuthCallback_N::disposeNative);
+    }
+
+    @Override
+    protected LongConsumer getDisposer() {
+        return CefAuthCallback_N::disposeNative;
+    }
+
+    private static void disposeNative(long handle) {
+        if (handle == 0) return;
+        new CleanupInvoker(handle).dispose();
+    }
+
+    private static final class CleanupInvoker extends CefAuthCallback_N {
+        private CleanupInvoker(long handle) {
+            super();
+            setNativeHandleUnsafe(handle);
+        }
+
+        void dispose() {
+            try {
+                N_Cancel(getNativeRef(null));
+            } catch (UnsatisfiedLinkError ule) {
+                ule.printStackTrace();
+            }
+        }
+
+        @Override
+        protected LongConsumer getDisposer() {
+            return null;
         }
     }
 

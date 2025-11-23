@@ -17,12 +17,6 @@ public abstract class CefCookieManager {
     // This CTOR can't be called directly. Call method create() instead.
     CefCookieManager() {}
 
-    @Override
-    protected void finalize() throws Throwable {
-        dispose();
-        super.finalize();
-    }
-
     /**
      * Returns the global cookie manager. By default data will be stored at CefSettings.cache_path
      * if specified or in memory otherwise.

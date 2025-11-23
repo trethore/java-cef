@@ -3,7 +3,7 @@
 :: that can be found in the LICENSE file.
 
 :: Compile the test program.
-javac -cp "./bin;./bin/*" ./bin/tests/detailed/*.java ./bin/tests/detailed/dialog/*.java ./bin/tests/detailed/handler/*.java ./bin/tests/detailed/ui/*.java ./bin/tests/simple/*.java
+javac --release 17 -cp "./bin;./bin/*" ./bin/tests/detailed/*.java ./bin/tests/detailed/dialog/*.java ./bin/tests/detailed/handler/*.java ./bin/tests/detailed/ui/*.java ./bin/tests/simple/*.java
 
 :: Create the test JAR file.
 cd bin
