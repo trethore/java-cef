@@ -2,8 +2,6 @@
 # reserved. Use of this source code is governed by a BSD-style license that
 # can be found in the LICENSE file
 
-from __future__ import absolute_import
-from __future__ import print_function
 from exec_util import exec_cmd
 import os
 import sys
@@ -27,7 +25,7 @@ def clang_format(file_name, file_contents):
   # the language when specifying contents via stdin.
   result = exec_cmd("%s -assume-filename=%s" %
                     (os.path.join(script_dir, clang_format_exe),
-                     file_name), root_dir, file_contents.encode('utf-8'))
+                     file_name), root_dir, file_contents)
   if result['err'] != '':
     print("clang-format error: %s" % result['err'])
   if result['out'] != '':
