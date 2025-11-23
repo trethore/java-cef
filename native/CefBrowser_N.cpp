@@ -28,6 +28,8 @@
 #define XK_3270  // for XK_3270_BackTab
 #include <X11/XF86keysym.h>
 #include <X11/keysym.h>
+#include <jawt.h>
+#include <jawt_md.h>
 #include <memory>
 #endif
 
@@ -38,10 +40,70 @@
 
 #if defined(OS_WIN)
 #include <memory>
+#include <jawt.h>
+#include <jawt_md.h>
 #undef MOUSE_MOVED
 #endif
 
 namespace {
+
+#if defined(OS_WIN)
+CefWindowHandle GetHwndOfCanvas(jobject canvas, JNIEnv* env) {
+  JAWT awt;
+  awt.version = JAWT_VERSION_1_4;
+  if (JAWT_GetAWT(env, &awt) == JNI_FALSE)
+    return kNullWindowHandle;
+
+  JAWT_DrawingSurface* ds = awt.GetDrawingSurface(env, canvas);
+  if (!ds)
+    return kNullWindowHandle;
+
+  CefWindowHandle hwnd = kNullWindowHandle;
+  jint lock = ds->Lock(ds);
+  if (!(lock & JAWT_LOCK_ERROR)) {
+    JAWT_DrawingSurfaceInfo* dsi = ds->GetDrawingSurfaceInfo(ds);
+    if (dsi) {
+      JAWT_Win32DrawingSurfaceInfo* dsi_win =
+          (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
+      if (dsi_win)
+        hwnd = (CefWindowHandle)dsi_win->hwnd;
+      ds->FreeDrawingSurfaceInfo(dsi);
+    }
+    ds->Unlock(ds);
+  }
+  awt.FreeDrawingSurface(ds);
+  return hwnd;
+}
+#endif  // OS_WIN
+
+#if defined(OS_LINUX)
+CefWindowHandle GetDrawableOfCanvas(jobject canvas, JNIEnv* env) {
+  JAWT awt;
+  awt.version = JAWT_VERSION_1_4;
+  if (JAWT_GetAWT(env, &awt) == JNI_FALSE)
+    return kNullWindowHandle;
+
+  JAWT_DrawingSurface* ds = awt.GetDrawingSurface(env, canvas);
+  if (!ds)
+    return kNullWindowHandle;
+
+  CefWindowHandle drawable = kNullWindowHandle;
+  jint lock = ds->Lock(ds);
+  if (!(lock & JAWT_LOCK_ERROR)) {
+    JAWT_DrawingSurfaceInfo* dsi = ds->GetDrawingSurfaceInfo(ds);
+    if (dsi) {
+      JAWT_X11DrawingSurfaceInfo* dsi_x11 =
+          (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
+      if (dsi_x11)
+        drawable = (CefWindowHandle)dsi_x11->drawable;
+      ds->FreeDrawingSurfaceInfo(dsi);
+    }
+    ds->Unlock(ds);
+  }
+  awt.FreeDrawingSurface(ds);
+  return drawable;
+}
+#endif  // OS_LINUX
 
 // Convert GLFW/LWJGL modifier mask (shift=0x1, ctrl=0x2, alt=0x4, super=0x8)
 // plus button masks from CefMouseEvent (0x10/0x20/0x40) into CEF flags.
@@ -2606,12 +2668,20 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
   base::OnceClosure callback = base::BindOnce(&OnAfterParentChanged, browser);
 
 #if defined(OS_MACOSX)
-  util::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle,
+  CefWindowHandle parentHandle =
+      reinterpret_cast<CefWindowHandle>(windowHandle);
+  util::SetParent(browser->GetHost()->GetWindowHandle(), parentHandle,
                   std::move(callback));
 #else
   CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
-  CefWindowHandle parentHandle =
-      canvas ? util::GetWindowHandle(env, canvas) : kNullWindowHandle;
+  CefWindowHandle parentHandle = kNullWindowHandle;
+#if defined(OS_WIN)
+  if (canvas)
+    parentHandle = GetHwndOfCanvas(canvas, env);
+#elif defined(OS_LINUX)
+  if (canvas)
+    parentHandle = GetDrawableOfCanvas(canvas, env);
+#endif
   if (CefCurrentlyOn(TID_UI)) {
     util::SetParent(browserHandle, parentHandle, std::move(callback));
   } else {
