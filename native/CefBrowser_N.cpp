@@ -92,6 +92,83 @@ int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
   return cef_modifiers;
 }
 
+#if defined(OS_WIN)
+// Translate GLFW key codes to Windows scan codes to mirror CinemaMod's
+// "Remap scancodes" patch. This preserves correct native codes for special
+// keys (arrows, delete, etc.) when events originate from LWJGL/GLFW.
+long MapScanCodeGLFW(JNIEnv* env, jclass glfwCls, int key_code, long scanCode) {
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_DELETE, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_LEFT, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_DOWN, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_UP, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_RIGHT, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_PAGE_DOWN, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_PAGE_UP, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_END, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_HOME, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_ENTER, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_KP_ENTER, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_LEFT_CONTROL, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_RIGHT_CONTROL, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_BACKSPACE, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_KP_4, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_KP_8, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_KP_6, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_KP_2, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_PRINT_SCREEN, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_SCROLL_LOCK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_CAPS_LOCK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_NUM_LOCK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_PAUSE, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, glfwCls, GLFW_KEY_INSERT, 0);
+
+  if (key_code == JNI_STATIC(GLFW_KEY_BACKSPACE) ||
+      key_code == JNI_STATIC(GLFW_KEY_KP_4) ||
+      key_code == JNI_STATIC(GLFW_KEY_KP_8) ||
+      key_code == JNI_STATIC(GLFW_KEY_KP_6) ||
+      key_code == JNI_STATIC(GLFW_KEY_KP_2) ||
+      key_code == JNI_STATIC(GLFW_KEY_PRINT_SCREEN) ||
+      key_code == JNI_STATIC(GLFW_KEY_SCROLL_LOCK) ||
+      key_code == JNI_STATIC(GLFW_KEY_CAPS_LOCK) ||
+      key_code == JNI_STATIC(GLFW_KEY_NUM_LOCK) ||
+      key_code == JNI_STATIC(GLFW_KEY_PAUSE) ||
+      key_code == JNI_STATIC(GLFW_KEY_INSERT)) {
+    int out = 0;
+    if (CallStaticJNIMethodII_V(env, glfwCls, "glfwGetKeyScancode", &out,
+                                key_code)) {
+      return out;
+    }
+  }
+
+  if (key_code == JNI_STATIC(GLFW_KEY_LEFT_CONTROL) ||
+      key_code == JNI_STATIC(GLFW_KEY_RIGHT_CONTROL))
+    return 29;
+  if (key_code == JNI_STATIC(GLFW_KEY_DELETE))
+    return 83;
+  if (key_code == JNI_STATIC(GLFW_KEY_LEFT))
+    return 75;
+  if (key_code == JNI_STATIC(GLFW_KEY_DOWN))
+    return 80;
+  if (key_code == JNI_STATIC(GLFW_KEY_UP))
+    return 72;
+  if (key_code == JNI_STATIC(GLFW_KEY_RIGHT))
+    return 77;
+  if (key_code == JNI_STATIC(GLFW_KEY_PAGE_DOWN))
+    return 81;
+  if (key_code == JNI_STATIC(GLFW_KEY_PAGE_UP))
+    return 73;
+  if (key_code == JNI_STATIC(GLFW_KEY_END))
+    return 79;
+  if (key_code == JNI_STATIC(GLFW_KEY_HOME))
+    return 71;
+  if (key_code == '\n' || key_code == JNI_STATIC(GLFW_KEY_ENTER) ||
+      key_code == JNI_STATIC(GLFW_KEY_KP_ENTER))
+    return 28;
+
+  return scanCode;
+}
+#endif  // defined(OS_WIN)
+
 #if defined(OS_LINUX)
 
 // From ui/events/keycodes/keyboard_codes_posix.h.
@@ -1724,6 +1801,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
 
   int event_type, modifiers;
   char16_t key_char;
+  int key_code = 0;
   if (!CallJNIMethodI_V(env, cls, key_event, "getID", &event_type) ||
       !CallJNIMethodC_V(env, cls, key_event, "getKeyChar", &key_char) ||
       !CallJNIMethodI_V(env, cls, key_event, "getModifiersEx", &modifiers)) {
@@ -1737,6 +1815,23 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
 
   jlong scanCode = 0;
   GetJNIFieldLong(env, cls, key_event, "scancode", &scanCode);
+
+  // Fetch virtual key code (AWT VK_*), required for GLFW remap on Windows.
+  CallJNIMethodI_V(env, cls, key_event, "getKeyCode", &key_code);
+
+  ScopedJNIClass glfwCls(env, "org/lwjgl/glfw/GLFW");
+  if (glfwCls) {
+    scanCode = MapScanCodeGLFW(env, glfwCls, key_code, scanCode);
+    if (scanCode == 0) {
+      // Fallback: try to derive via GLFW if still unset.
+      int out = 0;
+      if (CallStaticJNIMethodII_V(env, glfwCls, "glfwGetKeyScancode", &out,
+                                  key_code)) {
+        scanCode = out;
+      }
+    }
+  }
+
   BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;                  // key repeat count
@@ -2371,6 +2466,27 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter(JNIEnv* env,
 }
 
 JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter2(JNIEnv* env,
+                                                           jobject obj,
+                                                           jobject jdragData,
+                                                           jobject pos,
+                                                           jint jmodifiers,
+                                                           jint allowedOps) {
+  CefRefPtr<CefDragData> drag_data =
+      GetCefFromJNIObject<CefDragData>(env, jdragData, "CefDragData");
+  if (!drag_data.get())
+    return;
+
+  CefMouseEvent cef_event;
+  GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
+  cef_event.modifiers = GetCefModifiersGlfwMask(jmodifiers);
+
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragTargetDragEnter(
+      drag_data, cef_event, (CefBrowserHost::DragOperationsMask)allowedOps);
+}
+
+JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver(JNIEnv* env,
                                                          jobject obj,
                                                          jobject pos,
@@ -2383,6 +2499,21 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver(JNIEnv* env,
   CefMouseEvent cef_event;
   GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
   cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragTargetDragOver(
+      cef_event, (CefBrowserHost::DragOperationsMask)allowedOps);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver2(JNIEnv* env,
+                                                          jobject obj,
+                                                          jobject pos,
+                                                          jint jmodifiers,
+                                                          jint allowedOps) {
+  CefMouseEvent cef_event;
+  GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
+  cef_event.modifiers = GetCefModifiersGlfwMask(jmodifiers);
 
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragTargetDragOver(
@@ -2408,6 +2539,19 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop(JNIEnv* env,
   CefMouseEvent cef_event;
   GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
   cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragTargetDrop(cef_event);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop2(JNIEnv* env,
+                                                      jobject obj,
+                                                      jobject pos,
+                                                      jint jmodifiers) {
+  CefMouseEvent cef_event;
+  GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
+  cef_event.modifiers = GetCefModifiersGlfwMask(jmodifiers);
 
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragTargetDrop(cef_event);

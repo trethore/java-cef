@@ -488,6 +488,14 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter(JNIEnv*,
                                                           jint,
                                                           jint);
 
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter2(JNIEnv*,
+                                                          jobject,
+                                                          jobject,
+                                                          jobject,
+                                                          jint,
+                                                          jint);
+
 /*
  * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_DragTargetDragOver
@@ -495,6 +503,13 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter(JNIEnv*,
  */
 JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver(JNIEnv*,
+                                                         jobject,
+                                                         jobject,
+                                                         jint,
+                                                         jint);
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver2(JNIEnv*,
                                                          jobject,
                                                          jobject,
                                                          jint,
@@ -515,6 +530,12 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragLeave(JNIEnv*, jobject);
  */
 JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop(JNIEnv*,
+                                                    jobject,
+                                                    jobject,
+                                                    jint);
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop2(JNIEnv*,
                                                      jobject,
                                                      jobject,
                                                      jint);
