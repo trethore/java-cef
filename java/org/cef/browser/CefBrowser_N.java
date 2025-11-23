@@ -27,6 +27,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.util.Vector;
 import java.util.function.LongConsumer;
 import java.util.concurrent.CompletableFuture;
@@ -524,6 +525,12 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         @Override
         protected LongConsumer getDisposer() {
             return null; // avoid cleaner recursion for helper
+        }
+
+        @Override
+        public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution) {
+            return CompletableFuture.failedFuture(
+                    new UnsupportedOperationException("Screenshots are unavailable for cleanup"));
         }
     }
 

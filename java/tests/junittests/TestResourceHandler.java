@@ -5,7 +5,9 @@
 package tests.junittests;
 
 import org.cef.callback.CefCallback;
+import org.cef.callback.CefResourceReadCallback;
 import org.cef.handler.CefResourceHandlerAdapter;
+import org.cef.misc.BoolRef;
 import org.cef.misc.IntRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
@@ -27,8 +29,8 @@ class TestResourceHandler extends CefResourceHandlerAdapter {
     }
 
     @Override
-    public boolean processRequest(CefRequest request, CefCallback callback) {
-        callback.Continue();
+    public boolean open(CefRequest request, BoolRef handleRequest, CefCallback callback) {
+        handleRequest.set(true);
         return true;
     }
 
@@ -48,8 +50,8 @@ class TestResourceHandler extends CefResourceHandlerAdapter {
     }
 
     @Override
-    public boolean readResponse(
-            byte[] data_out, int bytes_to_read, IntRef bytes_read, CefCallback callback) {
+    public boolean read(
+            byte[] data_out, int bytes_to_read, IntRef bytes_read, CefResourceReadCallback callback) {
         int length = content_.length();
         if (offset_ >= length) return false;
 

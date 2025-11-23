@@ -23,6 +23,11 @@ CEF supports multiple languages and operating systems with performance and ease 
 ## Building JCEF
 JCEF extends the Chromium Embedded Framework (CEF) project at https://bitbucket.org/chromiumembedded/cef/. The development branch tracks the latest CEF3 release branch. Source can be downloaded, built, and packaged into a binary distribution that you can ship standalone without further CEF/Chromium source dependencies. See the [BranchesAndBuilding](https://bitbucket.org/chromiumembedded/java-cef/wiki/BranchesAndBuilding) wiki for detailed build steps.
 
+> Note for Linux builds: the AWT/off-screen renderer and the generated Javadoc rely on the JogAmp
+> JOGL jars in `third_party/jogamp/jar`. If you build with the GLFW backend only, you can skip the
+> AWT pieces, but running `ant doc` or compiling the AWT/OSR classes still requires those JOGL
+> artifacts to be present on the classpath.
+
 ## Helping Out
 JCEF is still evolving. You can help by:
 

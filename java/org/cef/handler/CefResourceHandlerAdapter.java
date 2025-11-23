@@ -21,13 +21,7 @@ import org.cef.network.CefResponse;
  */
 public abstract class CefResourceHandlerAdapter implements CefResourceHandler {
     @Override
-    public boolean processRequest(CefRequest request, CefCallback callback) {
-        return false;
-    }
-
-    @Override
     public boolean open(CefRequest request, BoolRef handleRequest, CefCallback callback) {
-        // Enables backwards compatibility by default by calling processRequest.
         handleRequest.set(false);
         return false;
     }
@@ -37,16 +31,9 @@ public abstract class CefResourceHandlerAdapter implements CefResourceHandler {
             CefResponse response, IntRef responseLength, StringRef redirectUrl) {}
 
     @Override
-    public boolean readResponse(
-            byte[] dataOut, int bytesToRead, IntRef bytesRead, CefCallback callback) {
-        return false;
-    }
-
-    @Override
     public boolean read(
             byte[] dataOut, int bytesToRead, IntRef bytesRead, CefResourceReadCallback callback) {
-        // Enables backwards compatibility by default by calling readResponse.
-        bytesRead.set(-1);
+        bytesRead.set(0);
         return false;
     }
 
