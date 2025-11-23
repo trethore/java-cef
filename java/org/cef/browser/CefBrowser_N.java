@@ -509,6 +509,17 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
 
         @Override
+        public Component getUIComponent() {
+            // No backing UI component for the disposer helper
+            return null;
+        }
+
+        @Override
+        public void createImmediately() {
+            // Nothing to create for the disposer helper
+        }
+
+        @Override
         protected CefBrowser_N createDevToolsBrowser(CefClient client, String url,
                 CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
             return null;
