@@ -72,7 +72,7 @@ void SetParentSync(CefWindowHandle browserHandle,
                    base::OnceClosure callback) {
   SetParent(browserHandle, parentHandle, std::move(callback));
   if (waitCond)
-    waitCond->Signal();
+    waitCond->WakeUp();
 }
 
 }  // namespace util

@@ -2,8 +2,29 @@
 <project name="javaLauncher" default="default" basedir=".">
 
   <property environment="env"/>
-  <property name="jdk.path"  value="${env.JDK_17}"/>
-  <property name="jdk.path"  value="${env.JAVA_HOME}"/>
+
+  <!-- Resolve JDK 17 home: prefer explicit jdk.path/jdk7.path, then env vars. -->
+  <condition property="jdk.path" value="${jdk7.path}">
+    <and>
+      <not><isset property="jdk.path"/></not>
+      <isset property="jdk7.path"/>
+    </and>
+  </condition>
+  <condition property="jdk.path" value="${env.JDK_17}">
+    <and>
+      <not><isset property="jdk.path"/></not>
+      <isset property="env.JDK_17"/>
+    </and>
+  </condition>
+  <condition property="jdk.path" value="${env.JAVA_HOME}">
+    <and>
+      <not><isset property="jdk.path"/></not>
+      <isset property="env.JAVA_HOME"/>
+    </and>
+  </condition>
+  <fail unless="jdk.path"
+        message="JDK 17 path not found. Set jdk.path, jdk7.path, JDK_17, or JAVA_HOME."/>
+
   <property name="out.path"   value="${env.OUT_PATH}"/>
   <property name="out.name"   value="${env.OUT_NAME}"/>
   <property name="out.id"     value="${env.OUT_ID}"/>
