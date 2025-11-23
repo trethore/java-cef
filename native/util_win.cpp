@@ -12,6 +12,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <utility>
 
 #ifdef USING_JAVA
 #include "client_handler.h"
@@ -304,6 +305,18 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
     UnhookWindowsHookEx(g_mouse_monitor_);
     g_mouse_monitor_ = NULL;
   }
+}
+
+void SetParent(CefWindowHandle browserHandle,
+               CefWindowHandle parentHandle,
+               base::OnceClosure callback) {
+  HWND browser_hwnd = static_cast<HWND>(browserHandle);
+  HWND parent_hwnd = static_cast<HWND>(parentHandle);
+
+  ::SetParent(browser_hwnd, parent_hwnd);
+
+  if (callback)
+    std::move(callback).Run();
 }
 
 void SetWindowBounds(CefWindowHandle browserHandle,

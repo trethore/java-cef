@@ -1836,7 +1836,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;                  // key repeat count
 #elif defined(OS_LINUX) || defined(OS_MACOSX)
-  int key_code;
   if (!CallJNIMethodI_V(env, cls, key_event, "getKeyCode", &key_code)) {
     return;
   }

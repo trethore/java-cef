@@ -23,6 +23,7 @@
 #include "render_handler.h"
 #include "temp_window.h"
 #include "window_handler.h"
+#include <utility>
 
 namespace {
 
@@ -536,6 +537,14 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
         (CefBrowserContentView*)[handle superview];
     [browserView destroyCefBrowser];
   }
+}
+
+void SetParent(CefWindowHandle browserHandle,
+               CefWindowHandle parentHandle,
+               base::OnceClosure callback) {
+  // On macOS the NSView hierarchy is managed by Java/AWT; no reparenting needed.
+  if (callback)
+    std::move(callback).Run();
 }
 
 }  // namespace util

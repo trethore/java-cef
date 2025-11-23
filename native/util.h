@@ -93,6 +93,21 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser);
 // Called by CefBrowser.close(true) to destroy the native browser window.
 void DestroyCefBrowser(CefRefPtr<CefBrowser> browser);
 
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MACOSX)
+// Reparent the browser window to |parentHandle| and invoke |callback| when done.
+void SetParent(CefWindowHandle browserHandle,
+               CefWindowHandle parentHandle,
+               base::OnceClosure callback);
+#endif
+
+#if defined(OS_LINUX)
+// Linux-only synchronous reparent helper used when UI-thread roundtrip is required.
+void SetParentSync(CefWindowHandle browserHandle,
+                   CefWindowHandle parentHandle,
+                   CriticalWait* waitCond,
+                   base::OnceClosure callback);
+#endif
+
 #if !defined(OS_MACOSX)
 
 // Set the window bounds for |browserHandle|.
