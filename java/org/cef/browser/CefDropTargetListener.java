@@ -111,9 +111,13 @@ class CefDropTargetListener implements DropTargetListener {
                     if (!(ob instanceof String)) continue;
                     dragData.setFragmentText((String) ob);
                 } else if (flavor.isFlavorJavaFileListType()) {
-                    List<File> files = (List<File>) transferable.getTransferData(flavor);
-                    for (File file : files) {
-                        dragData.addFile(file.getPath(), file.getName());
+                    Object data = transferable.getTransferData(flavor);
+                    if (!(data instanceof List<?>)) continue;
+                    for (Object entry : (List<?>) data) {
+                        if (entry instanceof File) {
+                            File file = (File) entry;
+                            dragData.addFile(file.getPath(), file.getName());
+                        }
                     }
                 }
             } catch (Exception e) {

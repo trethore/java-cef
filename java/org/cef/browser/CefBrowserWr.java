@@ -334,15 +334,11 @@ class CefBrowserWr extends CefBrowser_N {
         if (OS.isMacintosh()) {
             try {
                 Class<?> cls = Class.forName("org.cef.browser.mac.CefBrowserWindowMac");
-                CefBrowserWindow browserWindow = (CefBrowserWindow) cls.newInstance();
-                if (browserWindow != null) {
-                    return browserWindow.getWindowHandle(component);
+                Object instance = cls.getDeclaredConstructor().newInstance();
+                if (instance instanceof CefBrowserWindow) {
+                    return ((CefBrowserWindow) instance).getWindowHandle(component);
                 }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (ReflectiveOperationException e) {
                 e.printStackTrace();
             }
         }
